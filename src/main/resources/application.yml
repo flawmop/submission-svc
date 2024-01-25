@@ -1,0 +1,19 @@
+server:
+  netty:
+    connection-timeout: 2s
+    idle-timeout: 15s
+  port: 9002
+  shutdown: graceful
+
+spring:
+  application:
+    name: rip-svr
+  servlet:
+    # https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/servlet/MultipartProperties.html
+    multipart:
+      # Max size for uploaded files
+      max-file-size: 1MB
+      # Max size for a multipart/form-data request (inc. file uploads)
+      max-request-size: 1MB
+      # Files stored in memory up to this amount (thereafter stored on disk).
+      file-size-threshold: 250KB
