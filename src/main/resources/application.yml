@@ -8,6 +8,17 @@ server:
 spring:
   application:
     name: rip-svr
+  cloud:
+    stream:
+      bindings:
+        simulation-input:
+          destination: invoke-simulation
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+    connection-timeout: 5s
   servlet:
     # https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/servlet/MultipartProperties.html
     multipart:

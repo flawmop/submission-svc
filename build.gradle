@@ -20,8 +20,17 @@ ext {
   set('springCloudVersion', "2023.0.0")
 }
 
+configurations {
+  runtimeOnly {
+    // Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+    exclude group: 'commons-logging', module: 'commons-logging'
+  }
+}
+
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
+  // Note: Introduces commons-logging conflict with spring-boot-starter-web!
+  implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'io.projectreactor:reactor-test'

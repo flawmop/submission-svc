@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.insilicosoft.portal.ripsvr.service.FileStorageService;
+import com.insilicosoft.portal.ripsvr.service.InputProcessorService;
 
 @Controller
 public class FileAsyncUploadController {
 
   @Autowired
-  FileStorageService fileStorageService;
+  InputProcessorService inputProcessorService;
 
   @PostMapping("/uploadAsync")
   public CompletableFuture<ResponseEntity<String>> handleFileUpload(final @RequestParam("file")
@@ -25,7 +25,7 @@ public class FileAsyncUploadController {
     if (file == null) {
       return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("No files submitted"));
     } else {
-      fileStorageService.save(file);
+      inputProcessorService.process(file);
       return CompletableFuture.completedFuture(ResponseEntity.ok(file.getOriginalFilename()));
     }
   }

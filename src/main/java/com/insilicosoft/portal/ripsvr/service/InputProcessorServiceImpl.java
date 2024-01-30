@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.insilicosoft.portal.ripsvr.event.SimulationMessage;
 
 enum FieldsSections {
   simulations
@@ -28,13 +30,19 @@ enum FieldsSimulation {
 }
 
 @Service
-public class FileStorageServiceImpl implements FileStorageService {
+public class InputProcessorServiceImpl implements InputProcessorService {
 
-  private static final Logger log = LoggerFactory.getLogger(FileStorageServiceImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(InputProcessorServiceImpl.class);
+
+  private final StreamBridge streamBridge;
+
+  public InputProcessorServiceImpl(StreamBridge streamBridge) {
+    this.streamBridge = streamBridge;
+  }
 
   @Override
   @Async
-  public void save(final MultipartFile file) {
+  public void process(final MultipartFile file) {
     String content = null;
     try {
       content = new String(file.getBytes(), UTF_8);
@@ -45,6 +53,8 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     JsonFactory jsonFactory = new JsonFactory();
+    final List<SimulationMessage> simulations = new ArrayList<>();
+
     try {
       JsonParser jsonParser = jsonFactory.createParser(content);
       if (jsonParser.nextToken() != JsonToken.START_OBJECT) {
@@ -57,7 +67,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         if (sectionName != null) {
           switch (FieldsSections.valueOf(sectionName)) {
             case simulations:
-              parseSimulations(jsonParser);
+              parseSimulations(jsonParser, simulations);
               break;
             default:
               log.warn("Unrecognized section '{}", sectionName);
@@ -69,14 +79,22 @@ public class FileStorageServiceImpl implements FileStorageService {
     } catch (IOException|UnsupportedOperationException e) {
       e.printStackTrace();
     }
+
+    // Verify the input was good
+
+    // Fire off events for, e.g. simulation runners and databases
+    for (SimulationMessage simulationMessage: simulations) {
+      streamBridge.send("simulation-input", simulationMessage);
+    }
+
   }
 
-  void parseSimulations(JsonParser jsonParser) throws IOException {
+  void parseSimulations(JsonParser jsonParser, List<SimulationMessage> simulations) throws IOException {
     while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
       Integer modelId = null;
-      float pacingFrequency = 0.0f;
-      float pacingMaxTime = 0.0f;
-      List<Float> plasmaPoints = new ArrayList<>();
+      Float pacingFrequency = null;
+      Float pacingMaxTime = null;
+      List<Float> plasmaPoints = null;
 
       while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
         String fieldName = jsonParser.getCurrentName();
@@ -96,6 +114,7 @@ public class FileStorageServiceImpl implements FileStorageService {
               break;
             case plasmaPoints:
               jsonParser.nextToken();
+              plasmaPoints = new ArrayList<>();
               while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                 plasmaPoints.add(jsonParser.getFloatValue());
               }
@@ -106,6 +125,8 @@ public class FileStorageServiceImpl implements FileStorageService {
           }
         }
       }
+
+      simulations.add(new SimulationMessage(modelId, pacingFrequency, pacingMaxTime, plasmaPoints));
     }
   }
 
