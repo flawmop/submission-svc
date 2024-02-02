@@ -14,6 +14,8 @@ spec:
       labels:
         app: run-input-processing-svc
     spec:
+      imagePullSecrets:
+      - name: registrypullsecret
       containers:
         - name: run-input-processing-svc
           image: ghcr.io/flawmop/run-input-processing-svc
