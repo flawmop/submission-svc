@@ -1,0 +1,2 @@
+portal:
+  greeting: from welcome-svc/k8s/application.yml

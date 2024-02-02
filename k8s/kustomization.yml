@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yml
+  - service.yml
+
+configMapGenerator:
+  - name: run-input-processing-config
+    files:
+      - application.yml
+
+generatorOptions:
+  #disableNameSuffixHash: true
+  labels:
+    app: run-input-processing-svc

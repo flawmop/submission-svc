@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: run-input-processing-svc
+  labels:
+    app: run-input-processing-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: run-input-processing-svc
+  template:
+    metadata:
+      labels:
+        app: run-input-processing-svc
+    spec:
+      containers:
+        - name: run-input-processing-svc
+          image: ghcr.io/flawmop/run-input-processing-svc
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 5" ]
+          ports:
+            - containerPort: 9002
+          volumeMounts:
+            - name: run-input-processing-config-volume
+              mountPath: /workspace/config
+      volumes:
+        - name: run-input-processing-config-volume
+          configMap:
+            name: run-input-processing-config
