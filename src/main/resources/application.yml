@@ -1,3 +1,7 @@
+logging:
+  level:
+    root: DEBUG
+
 server:
   netty:
     connection-timeout: 2s
