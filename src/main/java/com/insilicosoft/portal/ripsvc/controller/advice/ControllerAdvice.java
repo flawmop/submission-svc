@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvr.controller.advice;
+package com.insilicosoft.portal.ripsvc.controller.advice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

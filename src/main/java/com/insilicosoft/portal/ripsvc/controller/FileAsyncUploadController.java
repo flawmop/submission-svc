@@ -1,9 +1,8 @@
-package com.insilicosoft.portal.ripsvr.controller;
+package com.insilicosoft.portal.ripsvc.controller;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,14 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.insilicosoft.portal.ripsvr.service.InputProcessorService;
+import com.insilicosoft.portal.ripsvc.service.InputProcessorService;
 
 @Controller
 @RequestMapping("/run")
 public class FileAsyncUploadController {
 
-  @Autowired
-  InputProcessorService inputProcessorService;
+  private final InputProcessorService inputProcessorService;
+
+  public FileAsyncUploadController(InputProcessorService inputProcessorService) {
+    this.inputProcessorService = inputProcessorService;
+  }
 
   @GetMapping()
   public CompletableFuture<ResponseEntity<String>> get() {

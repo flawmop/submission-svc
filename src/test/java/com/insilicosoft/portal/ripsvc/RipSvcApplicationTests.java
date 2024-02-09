@@ -1,10 +1,10 @@
-package com.insilicosoft.portal.ripsvr;
+package com.insilicosoft.portal.ripsvc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RipSvrApplicationTests {
+class RipSvcApplicationTests {
 
 	@Test
 	void contextLoads() {

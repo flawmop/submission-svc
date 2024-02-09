@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvr.config;
+package com.insilicosoft.portal.ripsvc.config;
 
 import java.util.concurrent.Executor;
 

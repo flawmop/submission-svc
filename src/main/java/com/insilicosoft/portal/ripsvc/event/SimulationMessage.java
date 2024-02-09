@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvr.event;
+package com.insilicosoft.portal.ripsvc.event;
 
 import java.util.List;
 import java.util.Objects;

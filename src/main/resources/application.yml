@@ -11,7 +11,7 @@ server:
 
 spring:
   application:
-    name: rip-svr
+    name: rip-svc
   cloud:
     stream:
       bindings:

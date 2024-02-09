@@ -1,13 +1,13 @@
-package com.insilicosoft.portal.ripsvr;
+package com.insilicosoft.portal.ripsvc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RipSvrApplication {
+public class RipSvcApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(RipSvrApplication.class, args);
+    SpringApplication.run(RipSvcApplication.class, args);
   }
 
 }
