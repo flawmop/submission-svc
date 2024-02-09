@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvc;
+package com.insilicosoft.portal.svc.rip;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

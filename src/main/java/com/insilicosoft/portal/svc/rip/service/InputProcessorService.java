@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvc.service;
+package com.insilicosoft.portal.svc.rip.service;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvc.service;
+package com.insilicosoft.portal.svc.rip.service;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.insilicosoft.portal.ripsvc.event.SimulationMessage;
+import com.insilicosoft.portal.svc.rip.event.SimulationMessage;
 
 enum FieldsSections {
   simulations

@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.ripsvc.controller;
+package com.insilicosoft.portal.svc.rip.controller;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.insilicosoft.portal.ripsvc.service.InputProcessorService;
+import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 
 @Controller
 @RequestMapping("/run")
