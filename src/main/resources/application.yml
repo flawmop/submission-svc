@@ -16,7 +16,7 @@ spring:
     stream:
       bindings:
         simulation-input:
-          destination: invoke-simulation
+          destination: simulation-invoke
   rabbitmq:
     host: localhost
     port: 5672
