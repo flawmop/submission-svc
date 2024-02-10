@@ -47,7 +47,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
     try {
       content = new String(file.getBytes(), UTF_8);
     } catch (IOException|OutOfMemoryError e) {
-      log.error("IOException|OutOfMemoryError : " + e.getMessage());
+      log.error("~process() : IOException|OutOfMemoryError : " + e.getMessage());
       e.printStackTrace();
       return;
     }
@@ -58,7 +58,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
     try {
       JsonParser jsonParser = jsonFactory.createParser(content);
       if (jsonParser.nextToken() != JsonToken.START_OBJECT) {
-        log.error("Content must be a JSON object");
+        log.error("~process() : Content must be a JSON object");
         throw new UnsupportedOperationException("JSON must be an Object!");
       }
 
@@ -70,7 +70,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
               parseSimulations(jsonParser, simulations);
               break;
             default:
-              log.warn("Unrecognized section '{}", sectionName);
+              log.warn("~process() : Unrecognized section '{}'", sectionName);
               break;
           }
         }
