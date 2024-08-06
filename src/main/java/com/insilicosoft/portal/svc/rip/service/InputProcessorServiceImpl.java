@@ -63,7 +63,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
       }
 
       while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-        String sectionName = jsonParser.getCurrentName();
+        String sectionName = jsonParser.currentName();
         if (sectionName != null) {
           switch (FieldsSections.valueOf(sectionName)) {
             case simulations:
@@ -97,7 +97,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
       List<Float> plasmaPoints = null;
 
       while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-        String fieldName = jsonParser.getCurrentName();
+        String fieldName = jsonParser.currentName();
         if (fieldName != null) {
           switch (FieldsSimulation.valueOf(fieldName)) {
             case modelId:
