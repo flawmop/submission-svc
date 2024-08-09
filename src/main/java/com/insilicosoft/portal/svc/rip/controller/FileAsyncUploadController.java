@@ -25,7 +25,7 @@ public class FileAsyncUploadController {
 
   @GetMapping()
   public CompletableFuture<ResponseEntity<String>> get() {
-    return CompletableFuture.completedFuture(ResponseEntity.ok("All good!!"));
+    return CompletableFuture.completedFuture(ResponseEntity.ok("All good from FileAsyncUploadController!!"));
   }
 
   @PostMapping("/uploadAsync")
