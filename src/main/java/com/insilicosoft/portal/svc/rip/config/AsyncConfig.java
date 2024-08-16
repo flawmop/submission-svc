@@ -35,10 +35,10 @@ public class AsyncConfig {
    * @param queueCapacity Executor queue capacity, e.g. 500.
    * @param threadNamePrefix Executor thread name prefix.
    */
-  AsyncConfig (@Value("${core.pool.size}") int corePoolSize,
-               @Value("${max.pool.size}") int maxPoolSize,
-               @Value("${queue.capacity}") int queueCapacity,
-               @Value("${threadNamePrefix}") String threadNamePrefix) {
+  AsyncConfig(@Value("${com.insilicosoft.executor.core-pool-size}") int corePoolSize,
+              @Value("${com.insilicosoft.executor.max-pool-size}") int maxPoolSize,
+              @Value("${com.insilicosoft.executor.queue-capacity}") int queueCapacity,
+              @Value("${com.insilicosoft.executor.thread-name-prefix}") String threadNamePrefix) {
     this.corePoolSize = corePoolSize;
     this.maxPoolSize = maxPoolSize;
     this.queueCapacity = queueCapacity;
