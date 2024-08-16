@@ -1,3 +1,11 @@
+com:
+  insilicosoft:
+    executor:
+      core-pool-size: 2
+      max-pool-size: 2
+      queue-capacity: 50
+      thread-name-prefix: ~Async-dflt-
+
 logging:
   level:
     root: DEBUG
