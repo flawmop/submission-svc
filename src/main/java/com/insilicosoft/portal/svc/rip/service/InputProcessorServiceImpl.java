@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -42,28 +41,21 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   @Override
   @Async
-  public void process(final MultipartFile file) {
-    String content = null;
-    try {
-      content = new String(file.getBytes(), UTF_8);
-    } catch (IOException|OutOfMemoryError e) {
-      log.error("~process() : IOException|OutOfMemoryError : " + e.getMessage());
-      e.printStackTrace();
-      return;
-    }
+  public void process(final byte[] file) {
+    final String content = new String(file, UTF_8);
 
-    JsonFactory jsonFactory = new JsonFactory();
+    final JsonFactory jsonFactory = new JsonFactory();
     final List<SimulationMessage> simulations = new ArrayList<>();
 
     try {
-      JsonParser jsonParser = jsonFactory.createParser(content);
+      final JsonParser jsonParser = jsonFactory.createParser(content);
       if (jsonParser.nextToken() != JsonToken.START_OBJECT) {
         log.error("~process() : Content must be a JSON object");
         throw new UnsupportedOperationException("JSON must be an Object!");
       }
 
       while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-        String sectionName = jsonParser.currentName();
+        final String sectionName = jsonParser.currentName();
         if (sectionName != null) {
           switch (FieldsSections.valueOf(sectionName)) {
             case simulations:

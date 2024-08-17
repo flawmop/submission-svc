@@ -7,8 +7,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
+import com.insilicosoft.portal.svc.rip.FileProcessingException ;
+
 @RestControllerAdvice
 public class ControllerAdvice {
+
+  @ExceptionHandler(FileProcessingException.class)
+  public ResponseEntity<String> handleFileProcessingProblem(FileProcessingException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
 
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   public ResponseEntity<String> handleMaxUploadSizeExceeded() {

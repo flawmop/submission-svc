@@ -1,9 +1,17 @@
 package com.insilicosoft.portal.svc.rip.service;
 
-import org.springframework.web.multipart.MultipartFile;
-
+/**
+ * Interface to input processing.
+ *
+ * @author geoff
+ */
 public interface InputProcessorService {
 
-  public void process(MultipartFile file);
+  /**
+   * Process a file (as a byte array).
+   *
+   * @param file Byte array file.
+   */
+  public void process(byte[] file);
 
 }
