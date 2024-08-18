@@ -9,19 +9,42 @@ import org.springframework.web.multipart.MultipartException;
 
 import com.insilicosoft.portal.svc.rip.FileProcessingException ;
 
+/**
+ * REST controller advice.
+ *
+ * @author geoff
+ */
 @RestControllerAdvice
 public class ControllerAdvice {
 
+  /**
+   * Something we're going to handle.
+   *
+   * @param e File processing exception.
+   * @return Response entity.
+   */
   @ExceptionHandler(FileProcessingException.class)
   public ResponseEntity<String> handleFileProcessingProblem(FileProcessingException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 
+  /**
+   * Max upload size exceeded.
+   *
+   * @param e Upload file size exception.
+   * @return Response entity.
+   */
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   public ResponseEntity<String> handleMaxUploadSizeExceeded() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File size exceeds the limit.");
   }
 
+  /**
+   * Multipart resolution failure.
+   *
+   * @param e Multipart exception.
+   * @return Response entity.
+   */
   @ExceptionHandler(MultipartException.class)
   public ResponseEntity<String> handleMultipartException() {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

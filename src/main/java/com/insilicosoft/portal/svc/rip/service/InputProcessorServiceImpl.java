@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.insilicosoft.portal.svc.rip.FileProcessingException ;
 import com.insilicosoft.portal.svc.rip.event.SimulationMessage;
 
 enum FieldsSections {
@@ -28,6 +29,11 @@ enum FieldsSimulation {
   plasmaPoints
 }
 
+/**
+ * Input processing implementation.
+ *
+ * @author geoff
+ */
 @Service
 public class InputProcessorServiceImpl implements InputProcessorService {
 
@@ -41,7 +47,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   @Override
   @Async
-  public void process(final byte[] file) {
+  public void process(final byte[] file) throws FileProcessingException {
     final String content = new String(file, UTF_8);
 
     final JsonFactory jsonFactory = new JsonFactory();
@@ -50,8 +56,9 @@ public class InputProcessorServiceImpl implements InputProcessorService {
     try {
       final JsonParser jsonParser = jsonFactory.createParser(content);
       if (jsonParser.nextToken() != JsonToken.START_OBJECT) {
-        log.error("~process() : Content must be a JSON object");
-        throw new UnsupportedOperationException("JSON must be an Object!");
+        final String message = "Content must be a JSON object";
+        log.warn("~process() : ".concat(message));
+        throw new FileProcessingException(message);
       }
 
       while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
@@ -68,8 +75,10 @@ public class InputProcessorServiceImpl implements InputProcessorService {
         }
       }
       jsonParser.close();
-    } catch (IOException|UnsupportedOperationException e) {
-      e.printStackTrace();
+    } catch (IOException e) {
+      final String message = e.getMessage();
+      log.warn("~process() : IOException '{}'", message);
+      throw new FileProcessingException(message);
     }
 
     // Verify the input was good

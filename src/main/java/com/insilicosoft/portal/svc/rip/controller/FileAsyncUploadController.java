@@ -25,23 +25,29 @@ import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 @RequestMapping("/run")
 public class FileAsyncUploadController {
 
-  private static final Logger log = LoggerFactory.getLogger(FileAsyncUploadController.class);
-
   public static final String UPLOAD_FILE_PARAM_NAME = "mpfile";
+
+  private static final Logger log = LoggerFactory.getLogger(FileAsyncUploadController.class);
 
   private final InputProcessorService inputProcessorService;
 
+  /**
+   * Initialising constructor.
+   *
+   * @param inputProcessorService Input processing implementation.
+   */
   public FileAsyncUploadController(InputProcessorService inputProcessorService) {
     this.inputProcessorService = inputProcessorService;
   }
 
+  // TODO Remove GET mapping in /run endpoint controller
   @GetMapping()
   public CompletableFuture<ResponseEntity<String>> get() {
     return CompletableFuture.completedFuture(ResponseEntity.ok("All good from FileAsyncUploadController!!"));
   }
 
   /**
-   * Handle the file uploading.
+   * Handle the file uploading from a {@code POST} request.
    *
    * @param file File being uploaded.
    * @return Response entity.
@@ -59,7 +65,7 @@ public class FileAsyncUploadController {
       throw new FileProcessingException(message);
     }
 
-    final String fileName = file.getOriginalFilename ( );
+    final String fileName = file.getOriginalFilename();
 
     // Buffer the file in-memory before handing over to async processing.
     byte[] fileByteArray = null;
