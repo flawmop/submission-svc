@@ -1,6 +1,6 @@
 package com.insilicosoft.portal.svc.rip.service;
 
-import com.insilicosoft.portal.svc.rip.FileProcessingException ;
+import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
 
 /**
  * Interface to input processing.
@@ -8,6 +8,9 @@ import com.insilicosoft.portal.svc.rip.FileProcessingException ;
  * @author geoff
  */
 public interface InputProcessorService {
+
+  // TODO Remove
+  public String get();
 
   /**
    * Process a file (as a byte array).

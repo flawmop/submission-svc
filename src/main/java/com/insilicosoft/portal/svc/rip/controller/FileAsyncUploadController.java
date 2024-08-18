@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart ;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.insilicosoft.portal.svc.rip.FileProcessingException ;
+import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 
 /**
@@ -42,8 +42,8 @@ public class FileAsyncUploadController {
 
   // TODO Remove GET mapping in /run endpoint controller
   @GetMapping()
-  public CompletableFuture<ResponseEntity<String>> get() {
-    return CompletableFuture.completedFuture(ResponseEntity.ok("All good from FileAsyncUploadController!!"));
+  public ResponseEntity<String> get() {
+    return ResponseEntity.ok(inputProcessorService.get());
   }
 
   /**

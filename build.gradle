@@ -1,5 +1,6 @@
 plugins {
   id 'java'
+  id 'jvm-test-suite'
   id 'org.springframework.boot' version '3.3.2'
   id 'io.spring.dependency-management' version '1.1.6'
 
@@ -23,6 +24,9 @@ ext {
 }
 
 configurations {
+  //testE2EImplementation.extendsFrom(testImplementation)
+  //testE2ERuntimeOnly.extendsFrom(testRuntimeOnly)
+
   runtimeOnly {
     // Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
     exclude group: 'commons-logging', module: 'commons-logging'
@@ -43,6 +47,59 @@ dependencyManagement {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
   }
 }
+
+testing {
+  suites { 
+    configureEach { 
+      useJUnitJupiter() 
+      dependencies {
+        implementation project()
+        implementation 'org.springframework.boot:spring-boot-starter-test'
+      }
+    }
+
+    i(JvmTestSuite) { 
+      sources {
+        java {
+          srcDirs = ['src/test-i/java']
+        }
+      }
+      dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+      }
+    }
+
+    e2e(JvmTestSuite) { 
+      sources {
+        java {
+          srcDirs = ['src/test-e2e/java']
+        }
+      }
+    }
+  }
+}
+
+tasks.named('check') {
+  dependsOn(test)
+  dependsOn(testing.suites.i) 
+  dependsOn(testing.suites.e2e)
+}
+
+//sourceSets {
+//  testE2E {
+//    java {
+//      compileClasspath += main.output + test.output
+//      runtimeClasspath += main.output + test.output
+//    }
+//  }
+//}
+
+//task testE2E(type: Test) {
+//    description = "Run end-2-end tests"
+//    group = "verification"
+//    testClassesDirs = sourceSets.testE2E.output.classesDirs
+//    classpath = sourceSets.testE2E.runtimeClasspath
+//}
 
 // On deploy error of ....
 //   The current machine does not support all of the following CPU features that are required by the image: [CX8, CMOV, FXSR, MMX, SSE, SSE2, SSE3, SSSE3, SSE4_1, SSE4_2, POPCNT, LZCNT, AVX, AVX2, BMI1, BMI2, FMA].

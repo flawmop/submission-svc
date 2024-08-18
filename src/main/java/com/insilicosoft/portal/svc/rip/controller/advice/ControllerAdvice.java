@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
-import com.insilicosoft.portal.svc.rip.FileProcessingException ;
+import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
 
 /**
  * REST controller advice.

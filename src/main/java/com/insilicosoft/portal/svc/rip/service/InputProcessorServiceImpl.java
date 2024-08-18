@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.insilicosoft.portal.svc.rip.FileProcessingException ;
 import com.insilicosoft.portal.svc.rip.event.SimulationMessage;
+import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
 
 enum FieldsSections {
   simulations
@@ -43,6 +43,11 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   public InputProcessorServiceImpl(StreamBridge streamBridge) {
     this.streamBridge = streamBridge;
+  }
+
+  @Override
+  public String get() {
+    return "All good from FileAsyncUploadController->InputProcessorService!!";
   }
 
   @Override

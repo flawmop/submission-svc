@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.svc.rip;
+package com.insilicosoft.portal.svc.rip.exception;
 
 /**
  * File processing exception.
