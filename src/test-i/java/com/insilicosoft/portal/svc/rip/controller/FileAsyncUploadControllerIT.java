@@ -15,10 +15,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.insilicosoft.portal.svc.rip.RipIdentifiers;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 
-@WebMvcTest
-public class FileSyncUploadControllerIT {
+@WebMvcTest(FileAsyncUploadController.class)
+public class FileAsyncUploadControllerIT {
 
   final static MediaType textWithCharset = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
 
@@ -34,7 +35,7 @@ public class FileSyncUploadControllerIT {
 
     given(mockInputProcessorService.get()).willReturn(getMessage);
 
-    mockMvc.perform(get("/run"))
+    mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN))
            .andExpect(status().isOk())
            .andExpect(content().contentType(textWithCharset));
 

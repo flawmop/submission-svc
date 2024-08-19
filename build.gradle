@@ -1,4 +1,5 @@
 plugins {
+  id 'jacoco'
   id 'java'
   id 'jvm-test-suite'
   id 'org.springframework.boot' version '3.3.2'
@@ -24,9 +25,6 @@ ext {
 }
 
 configurations {
-  //testE2EImplementation.extendsFrom(testImplementation)
-  //testE2ERuntimeOnly.extendsFrom(testRuntimeOnly)
-
   runtimeOnly {
     // Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
     exclude group: 'commons-logging', module: 'commons-logging'
@@ -46,6 +44,10 @@ dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
   }
+}
+
+jacoco {
+  toolVersion = "0.8.12"
 }
 
 testing {
@@ -79,27 +81,32 @@ testing {
   }
 }
 
+// https://github.com/gradle/gradle/issues/19217#
+// https://github.com/rkrisztian/search/blob/ec93a56c6d01f5398fcb626a0fbefc8c18bbc267/build.gradle
+tasks.named('jacocoTestReport').configure {
+	enabled = false
+}
+
+tasks.register('codeCoverageReport', JacocoReport) {
+	sourceSets sourceSets.main
+
+	tasks.matching({ t -> t.extensions.findByType(JacocoTaskExtension) }).forEach { testTask ->
+		executionData testTask
+		dependsOn testTask
+	}
+
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
 tasks.named('check') {
   dependsOn(test)
   dependsOn(testing.suites.i) 
   dependsOn(testing.suites.e2e)
+  dependsOn('codeCoverageReport')
 }
-
-//sourceSets {
-//  testE2E {
-//    java {
-//      compileClasspath += main.output + test.output
-//      runtimeClasspath += main.output + test.output
-//    }
-//  }
-//}
-
-//task testE2E(type: Test) {
-//    description = "Run end-2-end tests"
-//    group = "verification"
-//    testClassesDirs = sourceSets.testE2E.output.classesDirs
-//    classpath = sourceSets.testE2E.runtimeClasspath
-//}
 
 // On deploy error of ....
 //   The current machine does not support all of the following CPU features that are required by the image: [CX8, CMOV, FXSR, MMX, SSE, SSE2, SSE3, SSSE3, SSE4_1, SSE4_2, POPCNT, LZCNT, AVX, AVX2, BMI1, BMI2, FMA].

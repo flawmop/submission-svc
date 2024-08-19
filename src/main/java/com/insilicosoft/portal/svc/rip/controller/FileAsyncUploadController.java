@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart ;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.insilicosoft.portal.svc.rip.RipIdentifiers;
 import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 
@@ -22,10 +23,8 @@ import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
  * @author geoff
  */
 @Controller
-@RequestMapping("/run")
+@RequestMapping(RipIdentifiers.REQUEST_MAPPING_RUN)
 public class FileAsyncUploadController {
-
-  public static final String UPLOAD_FILE_PARAM_NAME = "mpfile";
 
   private static final Logger log = LoggerFactory.getLogger(FileAsyncUploadController.class);
 
@@ -53,14 +52,14 @@ public class FileAsyncUploadController {
    * @return Response entity.
    * @throws FileProcessingException If problems processing file.
    */
-  @PostMapping("/uploadAsync")
+  @PostMapping(RipIdentifiers.REQUEST_MAPPING_UPLOAD_ASYNC)
   public CompletableFuture<ResponseEntity<String>> handleFileUpload(final @RequestPart(required=false,
-                                                                                       value=UPLOAD_FILE_PARAM_NAME)
+                                                                                       value=RipIdentifiers.PARAM_NAME_SIMULATION_FILE)
                                                                           MultipartFile file)
                                                    throws FileProcessingException {
 
     if (file == null) {
-      final String message = "The POST request must supply the parameter '" + UPLOAD_FILE_PARAM_NAME + "'";
+      final String message = "The POST request must supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "'";
       log.warn("~handleFileUpload() : ".concat(message));
       throw new FileProcessingException(message);
     }
