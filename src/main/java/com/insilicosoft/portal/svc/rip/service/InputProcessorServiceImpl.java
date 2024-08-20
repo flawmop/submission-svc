@@ -52,7 +52,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   @Override
   @Async
-  public void process(final byte[] file) throws FileProcessingException {
+  public void processAsync(final byte[] file) throws FileProcessingException {
     final String content = new String(file, UTF_8);
 
     final JsonFactory jsonFactory = new JsonFactory();
@@ -62,7 +62,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
       final JsonParser jsonParser = jsonFactory.createParser(content);
       if (jsonParser.nextToken() != JsonToken.START_OBJECT) {
         final String message = "Content must be a JSON object";
-        log.warn("~process() : ".concat(message));
+        log.warn("~processAsync() : ".concat(message));
         throw new FileProcessingException(message);
       }
 
@@ -74,7 +74,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
               parseSimulations(jsonParser, simulations);
               break;
             default:
-              log.warn("~process() : Unrecognized section '{}'", sectionName);
+              log.warn("~processAsync() : Unrecognized section '{}'", sectionName);
               break;
           }
         }
@@ -82,7 +82,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
       jsonParser.close();
     } catch (IOException e) {
       final String message = e.getMessage();
-      log.warn("~process() : IOException '{}'", message);
+      log.warn("~processAsync() : IOException '{}'", message);
       throw new FileProcessingException(message);
     }
 

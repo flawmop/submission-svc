@@ -76,7 +76,7 @@ public class FileAsyncUploadController {
       throw new FileProcessingException(e.getMessage());
     }
 
-    inputProcessorService.process(fileByteArray);
+    inputProcessorService.processAsync(fileByteArray);
 
     return CompletableFuture.completedFuture(ResponseEntity.ok(fileName));
   }

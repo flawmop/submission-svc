@@ -13,11 +13,11 @@ public interface InputProcessorService {
   public String get();
 
   /**
-   * Process a file (as a byte array).
+   * Process a file asyncronously (e.g. using the method {@code @Async} notation) a byte array).
    *
    * @param file Byte array file.
    * @throws FileProcessingException If file processing problems.
    */
-  public void process(byte[] file) throws FileProcessingException;
+  public void processAsync(byte[] file) throws FileProcessingException;
 
 }
