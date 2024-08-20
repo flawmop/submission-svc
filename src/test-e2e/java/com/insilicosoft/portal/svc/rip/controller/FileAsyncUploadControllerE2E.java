@@ -41,7 +41,7 @@ public class FileAsyncUploadControllerE2E {
   class getMethods {
     @DisplayName("Success")
     @Test
-    void get() {
+    void success() {
       ResponseEntity<String> response = restTemplate.getForEntity(RipIdentifiers.REQUEST_MAPPING_RUN,
                                                                   String.class);
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -54,7 +54,7 @@ public class FileAsyncUploadControllerE2E {
   class postMethods {
     @DisplayName("Fail on expected request param not supplied")
     @Test
-    void postFailOnBadParamName() {
+    void failOnBadParamName() {
       var linkedMVMap = new LinkedMultiValueMap<>();
 
       ResponseEntity<String> response = restTemplate.postForEntity(postUrl,
@@ -67,7 +67,7 @@ public class FileAsyncUploadControllerE2E {
 
     @DisplayName("Success on a good simulations request file")
     @Test
-    void postSuccess() {
+    void success() {
       var linkedMVMap = new LinkedMultiValueMap<>();
       linkedMVMap.add(RipIdentifiers.PARAM_NAME_SIMULATION_FILE, new FileSystemResource(goodPath));
 
