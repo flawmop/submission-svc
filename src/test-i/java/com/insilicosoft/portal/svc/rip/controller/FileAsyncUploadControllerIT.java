@@ -32,9 +32,9 @@ public class FileAsyncUploadControllerIT {
   @MockBean
   private InputProcessorService mockInputProcessorService;
 
-  @Nested
   @DisplayName("Test GET method(s)")
-  class getMethods {
+  @Nested
+  class GetMethods {
     @DisplayName("Success")
     @Test
     void testGet() throws Exception {

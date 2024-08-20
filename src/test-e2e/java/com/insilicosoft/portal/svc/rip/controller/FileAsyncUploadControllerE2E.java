@@ -36,9 +36,9 @@ public class FileAsyncUploadControllerE2E {
   @Autowired
   private TestRestTemplate restTemplate;
 
-  @Nested
   @DisplayName("Test GET method(s)")
-  class getMethods {
+  @Nested
+  class GetMethods {
     @DisplayName("Success")
     @Test
     void success() {
@@ -49,9 +49,9 @@ public class FileAsyncUploadControllerE2E {
     }
   }
 
-  @Nested
   @DisplayName("Test POST method(s)")
-  class postMethods {
+  @Nested
+  class PostMethods {
     @DisplayName("Fail on expected request param not supplied")
     @Test
     void failOnBadParamName() {
