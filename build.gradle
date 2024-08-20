@@ -84,21 +84,20 @@ testing {
 // https://github.com/gradle/gradle/issues/19217#
 // https://github.com/rkrisztian/search/blob/ec93a56c6d01f5398fcb626a0fbefc8c18bbc267/build.gradle
 tasks.named('jacocoTestReport').configure {
-	enabled = false
+  enabled = false
 }
 
 tasks.register('codeCoverageReport', JacocoReport) {
-	sourceSets sourceSets.main
+  sourceSets sourceSets.main
 
-	tasks.matching({ t -> t.extensions.findByType(JacocoTaskExtension) }).forEach { testTask ->
-		executionData testTask
-		dependsOn testTask
-	}
+  tasks.matching({ t -> t.extensions.findByType(JacocoTaskExtension) }).forEach { testTask ->
+    executionData testTask
+    dependsOn testTask
+  }
 
-	reports {
-		xml.required = true
-		html.required = true
-	}
+  reports {
+    html.required = true
+  }
 }
 
 tasks.named('check') {
