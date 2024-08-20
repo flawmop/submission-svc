@@ -1,5 +1,8 @@
 com:
   insilicosoft:
+    actuator:
+      username: actuator-user
+      password: actuator-password
     executor:
       core-pool-size: 2
       max-pool-size: 2
@@ -9,6 +12,13 @@ com:
 logging:
   level:
     root: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - info
 
 server:
   netty:

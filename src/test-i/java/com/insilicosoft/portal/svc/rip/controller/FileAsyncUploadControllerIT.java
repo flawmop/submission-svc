@@ -15,13 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.insilicosoft.portal.svc.rip.RipIdentifiers;
+import com.insilicosoft.portal.svc.rip.config.SecurityConfig;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 
 @WebMvcTest(FileAsyncUploadController.class)
+@Import(SecurityConfig.class)
 public class FileAsyncUploadControllerIT {
 
   private static final MediaType textWithCharset = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);

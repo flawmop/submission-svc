@@ -32,6 +32,8 @@ configurations {
 }
 
 dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-web'
   // Note: Introduces commons-logging conflict with spring-boot-starter-web!
   implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
@@ -61,7 +63,7 @@ testing {
       }
     }
 
-    i(JvmTestSuite) { 
+    test_i(JvmTestSuite) {
       sources {
         java {
           srcDirs = ['src/test-i/java']
@@ -69,7 +71,7 @@ testing {
       }
     }
 
-    e2e(JvmTestSuite) { 
+    test_e2e(JvmTestSuite) {
       sources {
         java {
           srcDirs = ['src/test-e2e/java']
@@ -100,8 +102,8 @@ tasks.register('codeCoverageReport', JacocoReport) {
 
 tasks.named('check') {
   dependsOn(test)
-  dependsOn(testing.suites.i) 
-  dependsOn(testing.suites.e2e)
+  dependsOn(testing.suites.test_i)
+  dependsOn(testing.suites.test_e2e)
   dependsOn('codeCoverageReport')
 }
 
