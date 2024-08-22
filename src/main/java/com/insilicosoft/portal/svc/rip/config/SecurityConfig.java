@@ -8,11 +8,14 @@ import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -44,15 +47,24 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     // Note: We've got MVC in classpath, so mvcMatchers (not antMatchers) are in effect
-    http.authorizeHttpRequests((authz) -> authz.requestMatchers(EndpointRequest.to(InfoEndpoint.class)).authenticated())
+    http.authorizeHttpRequests((authz) -> authz.requestMatchers(EndpointRequest.to(InfoEndpoint.class)).authenticated()
+                                               .requestMatchers(RipIdentifiers.REQUEST_MAPPING_RUN.concat("/**")).hasRole("customer"))
+        .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults()))
+        .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .csrf(AbstractHttpConfigurer::disable)
         .httpBasic(withDefaults());
     return http.build();
   }
 
-  // Bypass security completely
   @Bean
-  WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring().requestMatchers(RipIdentifiers.REQUEST_MAPPING_RUN.concat("/**"));
+  JwtAuthenticationConverter jwtAuthenticationConverter() {
+    var jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+    jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+
+    var jwtAuthenticationConverter = new JwtAuthenticationConverter();
+    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+    return jwtAuthenticationConverter;
   }
 
   @Bean

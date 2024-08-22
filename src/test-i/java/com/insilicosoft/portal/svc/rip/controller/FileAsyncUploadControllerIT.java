@@ -2,6 +2,7 @@ package com.insilicosoft.portal.svc.rip.controller;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -17,6 +18,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.insilicosoft.portal.svc.rip.RipIdentifiers;
@@ -28,12 +32,16 @@ import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 public class FileAsyncUploadControllerIT {
 
   private static final MediaType textWithCharset = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
+  private static final GrantedAuthority customerRole = new SimpleGrantedAuthority("ROLE_customer");
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
   private InputProcessorService mockInputProcessorService;
+
+  @MockBean
+  private JwtDecoder jwtDecoder;
 
   @DisplayName("Test GET method(s)")
   @Nested
@@ -45,10 +53,11 @@ public class FileAsyncUploadControllerIT {
 
       given(mockInputProcessorService.get()).willReturn(getMessage);
 
-      mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN))
+      mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN).with(jwt().authorities(customerRole)))
              //.andDo(print())
              .andExpect(status().isOk())
-             .andExpect(content().contentType(textWithCharset));
+             .andExpect(content().contentType(textWithCharset))
+             .andExpect(content().string(getMessage));
 
       verify(mockInputProcessorService).get();
     }
