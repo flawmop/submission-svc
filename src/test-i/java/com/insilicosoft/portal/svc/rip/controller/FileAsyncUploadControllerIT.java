@@ -32,7 +32,7 @@ import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 public class FileAsyncUploadControllerIT {
 
   private static final MediaType textWithCharset = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
-  private static final GrantedAuthority customerRole = new SimpleGrantedAuthority("ROLE_customer");
+  private static final GrantedAuthority userRole = new SimpleGrantedAuthority("ROLE_".concat(RipIdentifiers.ROLE_USER));
 
   @Autowired
   private MockMvc mockMvc;
@@ -53,7 +53,7 @@ public class FileAsyncUploadControllerIT {
 
       given(mockInputProcessorService.get()).willReturn(getMessage);
 
-      mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN).with(jwt().authorities(customerRole)))
+      mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN).with(jwt().authorities(userRole)))
              //.andDo(print())
              .andExpect(status().isOk())
              .andExpect(content().contentType(textWithCharset))

@@ -46,7 +46,7 @@
   "roles" : {
     "realm" : [ {
       "id" : "3f42160d-a6a7-4bc9-9e6f-fe0d8ffd3eed",
-      "name" : "customer",
+      "name" : "user",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "879889b2-df11-4724-91cc-e1a1c2c37fed",
@@ -396,7 +396,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "customer", "default-roles-polarbookshop" ],
+    "realmRoles" : [ "user", "default-roles-polarbookshop" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -417,7 +417,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "customer", "default-roles-polarbookshop", "employee" ],
+    "realmRoles" : [ "user", "default-roles-polarbookshop", "employee" ],
     "notBefore" : 0,
     "groups" : [ ]
   } ],
