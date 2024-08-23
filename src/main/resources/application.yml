@@ -19,6 +19,9 @@ management:
       exposure:
         include:
         - info
+  info:
+    build:
+      enabled: true
 
 server:
   netty:

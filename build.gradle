@@ -20,6 +20,11 @@ repositories {
   mavenCentral()
 }
 
+springBoot {
+  // Show the build info in actuator/info endpoint
+  buildInfo()
+}
+
 ext {
   set('springCloudVersion', "2023.0.0")
   set('testKeycloakVersion', "2.3.0")
