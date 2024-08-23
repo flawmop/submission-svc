@@ -58,6 +58,7 @@ public class SecurityConfig {
     return http.build();
   }
 
+  // For Keycloak, the below works with a 'realm roles' 'config.claim.name' of just 'roles' (not 'realm_access.roles'!)
   @Bean
   JwtAuthenticationConverter jwtAuthenticationConverter() {
     var jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
