@@ -20,8 +20,9 @@ management:
         include:
         - info
   info:
-    build:
+    git:
       enabled: true
+      mode: full
 
 server:
   netty:
