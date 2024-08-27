@@ -17,6 +17,8 @@ import com.insilicosoft.portal.svc.rip.RipIdentifiers;
 import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 
+import io.micrometer.core.annotation.Timed;
+
 /**
  * File upload controller
  *
@@ -41,6 +43,7 @@ public class FileAsyncUploadController {
 
   // TODO Remove GET mapping in /run endpoint controller
   @GetMapping()
+  @Timed(value = "run.get", description = "GET request")
   public ResponseEntity<String> get() {
     return ResponseEntity.ok(inputProcessorService.get());
   }
@@ -53,6 +56,7 @@ public class FileAsyncUploadController {
    * @throws FileProcessingException If problems processing file.
    */
   @PostMapping(RipIdentifiers.REQUEST_MAPPING_UPLOAD_ASYNC)
+  @Timed(value = "run.handle-file-upload", description = "POST Multipart request for file upload")
   public CompletableFuture<ResponseEntity<String>> handleFileUpload(final @RequestPart(required=false,
                                                                                        value=RipIdentifiers.PARAM_NAME_SIMULATION_FILE)
                                                                           MultipartFile file)

@@ -6,6 +6,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,7 +50,9 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     // Note: We've got MVC in classpath, so mvcMatchers (not antMatchers) are in effect
-    http.authorizeHttpRequests((authz) -> authz.requestMatchers(EndpointRequest.to(InfoEndpoint.class)).authenticated()
+    http.authorizeHttpRequests((authz) -> authz.requestMatchers(EndpointRequest.to(InfoEndpoint.class),
+                                                                EndpointRequest.to(MetricsEndpoint.class),
+                                                                EndpointRequest.to(PrometheusScrapeEndpoint.class)).authenticated()
                                                .requestMatchers(RipIdentifiers.REQUEST_MAPPING_RUN.concat("/**"))
                                                                .hasRole(RipIdentifiers.ROLE_USER))
         .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults()))
