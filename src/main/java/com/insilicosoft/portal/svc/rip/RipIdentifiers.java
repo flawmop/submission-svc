@@ -2,6 +2,8 @@ package com.insilicosoft.portal.svc.rip;
 
 public final class RipIdentifiers {
 
+  /** Also used in {@code application.yml} */
+  public static final String BINDING_NAME_SIMULATION_INPUT = "simulation-input";
   public static final String PARAM_NAME_SIMULATION_FILE = "mpfile";
   public static final String REQUEST_MAPPING_RUN = "/run";
   public static final String REQUEST_MAPPING_UPLOAD_ASYNC = "/uploadAsync";

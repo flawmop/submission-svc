@@ -42,6 +42,7 @@ spring:
   cloud:
     stream:
       bindings:
+        # Name below referenced internally and by StreamBridge
         simulation-input:
           destination: simulation-invoke
   rabbitmq:

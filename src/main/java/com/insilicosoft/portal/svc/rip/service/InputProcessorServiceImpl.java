@@ -1,5 +1,6 @@
 package com.insilicosoft.portal.svc.rip.service;
 
+import static com.insilicosoft.portal.svc.rip.RipIdentifiers.BINDING_NAME_SIMULATION_INPUT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
@@ -41,6 +42,11 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   private final StreamBridge streamBridge;
 
+  /**
+   * Initialising constructor.
+   * 
+   * @param streamBridge Event sending mechanism.
+   */
   public InputProcessorServiceImpl(StreamBridge streamBridge) {
     this.streamBridge = streamBridge;
   }
@@ -90,7 +96,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
     // Fire off events for, e.g. simulation runners and databases
     for (SimulationMessage simulationMessage: simulations) {
-      streamBridge.send("simulation-input", simulationMessage);
+      streamBridge.send(BINDING_NAME_SIMULATION_INPUT, simulationMessage);
     }
 
   }
