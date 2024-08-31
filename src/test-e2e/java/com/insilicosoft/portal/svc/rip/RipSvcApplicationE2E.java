@@ -6,7 +6,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 @SpringBootTest
-class RipSvcApplicationTests {
+class RipSvcApplicationE2E {
 
   @MockBean
   private JwtDecoder jwtDecoder;

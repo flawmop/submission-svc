@@ -45,6 +45,16 @@ spring:
         # Name below referenced internally and by StreamBridge
         simulation-input:
           destination: simulation-invoke
+  datasource:
+    hikari:
+      connection-timeout: 2000 #ms
+      maximum-pool-size: 5
+    password: password
+    url: jdbc:postgresql://localhost:5432/portaldb
+    username: user
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
   rabbitmq:
     host: localhost
     port: 5672

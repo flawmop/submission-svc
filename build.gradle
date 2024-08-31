@@ -32,7 +32,8 @@ gitProperties {
 
 ext {
   set('springCloudVersion', "2023.0.0")
-  set('testKeycloakVersion', "2.3.0")
+  set('tcKeycloakVersion', "2.3.0")
+  set('tcPostgresVersion', "1.17.3")
 }
 
 configurations {
@@ -44,13 +45,15 @@ configurations {
 
 dependencies {
   implementation 'io.micrometer:micrometer-registry-prometheus:1.13.3'
-  implementation 'org.springframework.boot:spring-boot-starter-aop'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
   implementation 'org.springframework.boot:spring-boot-starter-web'
   // Note: Introduces commons-logging conflict with spring-boot-starter-web!
   implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+
+  runtimeOnly 'org.postgresql:postgresql'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'io.projectreactor:reactor-test'
@@ -59,6 +62,7 @@ dependencies {
 dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    mavenBom "org.testcontainers:testcontainers-bom:${tcPostgresVersion}"
   }
 }
 
@@ -83,10 +87,17 @@ testing {
         java {
           srcDirs = ['src/test-i/java']
         }
+        resources {
+          srcDirs = ['src/test-i/resources']
+        }
       }
       dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+        implementation 'org.springframework.boot:spring-boot-testcontainers'
         implementation 'org.springframework.security:spring-security-test'
+        implementation 'org.testcontainers:junit-jupiter'
+        implementation "org.testcontainers:postgresql:${tcPostgresVersion}"
       }
     }
 
@@ -100,10 +111,18 @@ testing {
         }
       }
       dependencies {
+        implementation "com.github.dasniko:testcontainers-keycloak:${tcKeycloakVersion}"
         implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
         implementation 'org.springframework.security:spring-security-test'
         implementation 'org.testcontainers:junit-jupiter'
-        implementation "com.github.dasniko:testcontainers-keycloak:${testKeycloakVersion}"
+        implementation "org.testcontainers:postgresql:${tcPostgresVersion}"
+      }
+      targets.configureEach {
+        testTask.configure {
+          environment("SPRING_PROFILES_ACTIVE", "e2e")
+          // For extra debugging, use below with logging.level.root=TRACE in application-e2e.yml
+          // testLogging.showStandardStreams = true
+        }
       }
     }
   }

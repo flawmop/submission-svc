@@ -1,7 +1,7 @@
 package com.insilicosoft.portal.svc.rip.controller;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -39,9 +39,8 @@ public class FileAsyncUploadControllerIT {
 
   @MockBean
   private InputProcessorService mockInputProcessorService;
-
   @MockBean
-  private JwtDecoder jwtDecoder;
+  private JwtDecoder mockJwtDecoder;
 
   @DisplayName("Test GET method(s)")
   @Nested
@@ -51,7 +50,7 @@ public class FileAsyncUploadControllerIT {
     void testGet() throws Exception {
       final String getMessage = "Message from get!";
 
-      given(mockInputProcessorService.get()).willReturn(getMessage);
+      when(mockInputProcessorService.get()).thenReturn(getMessage);
 
       mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN).with(jwt().authorities(userRole)))
              //.andDo(print())

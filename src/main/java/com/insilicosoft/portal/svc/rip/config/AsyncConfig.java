@@ -1,7 +1,5 @@
 package com.insilicosoft.portal.svc.rip.config;
 
-import java.util.concurrent.Executor;
-
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
 import org.springframework.beans.factory.annotation.Value ;
@@ -9,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 
 /**
  * Asynchronous configuration.
@@ -46,12 +45,13 @@ public class AsyncConfig {
   }
 
   /**
-   * Create the {@link ThreadPoolTaskExecutor}.
+   * Create a {@link DelegatingSecurityContextAsyncTaskExecutor} as we want to be passing a 
+   * security {@code Authentication} object to asynchronous methods (e.g. for JPA auditing purposes).
    * 
    * @return Created executor.
    */
   @Bean
-  Executor taskExecutor() {
+  DelegatingSecurityContextAsyncTaskExecutor taskExecutor() {
     final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(corePoolSize);
     executor.setMaxPoolSize(maxPoolSize);
@@ -62,7 +62,7 @@ public class AsyncConfig {
     log.debug("~taskExecutor() : Executor core pool size '{}', max pool size '{}', queue capacity '{}', thread name prefix '{}'",
               corePoolSize, maxPoolSize, queueCapacity, threadNamePrefix);
 
-    return executor;
+    return new DelegatingSecurityContextAsyncTaskExecutor(executor);
   }
 
 }

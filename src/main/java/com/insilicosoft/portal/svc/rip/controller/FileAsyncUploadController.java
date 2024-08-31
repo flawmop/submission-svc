@@ -37,7 +37,7 @@ public class FileAsyncUploadController {
    *
    * @param inputProcessorService Input processing implementation.
    */
-  public FileAsyncUploadController(InputProcessorService inputProcessorService) {
+  public FileAsyncUploadController(final InputProcessorService inputProcessorService) {
     this.inputProcessorService = inputProcessorService;
   }
 

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.insilicosoft.portal.svc.rip.event.SimulationMessage;
 import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
+import com.insilicosoft.portal.svc.rip.persistence.entity.Simulation;
+import com.insilicosoft.portal.svc.rip.persistence.repository.SimulationRepository;
 
 enum FieldsSections {
   simulations
@@ -40,14 +42,18 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   private static final Logger log = LoggerFactory.getLogger(InputProcessorServiceImpl.class);
 
+  private final SimulationRepository simulationRepository;
   private final StreamBridge streamBridge;
 
   /**
    * Initialising constructor.
    * 
+   * @param simulationRepository Simulation repository.
    * @param streamBridge Event sending mechanism.
    */
-  public InputProcessorServiceImpl(StreamBridge streamBridge) {
+  public InputProcessorServiceImpl(final SimulationRepository simulationRepository,
+                                   final StreamBridge streamBridge) {
+    this.simulationRepository = simulationRepository;
     this.streamBridge = streamBridge;
   }
 
@@ -94,11 +100,13 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
     // Verify the input was good
 
+    // Record the simulation
+    log.debug("~processAsync() : Saved : " + simulationRepository.save(new Simulation()).toString());
+
     // Fire off events for, e.g. simulation runners and databases
     for (SimulationMessage simulationMessage: simulations) {
       streamBridge.send(BINDING_NAME_SIMULATION_INPUT, simulationMessage);
     }
-
   }
 
   void parseSimulations(JsonParser jsonParser, List<SimulationMessage> simulations) throws IOException {
