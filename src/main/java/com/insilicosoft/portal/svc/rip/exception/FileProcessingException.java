@@ -2,8 +2,11 @@ package com.insilicosoft.portal.svc.rip.exception;
 
 /**
  * File processing exception.
+ * <p>
+ * Throw this exception if there's been a problem receiving and extracting the content of the file.
  * 
  * @author geoff
+ * @see InputVerificationException
  */
 public class FileProcessingException extends Exception {
 

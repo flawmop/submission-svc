@@ -3,6 +3,9 @@ package com.insilicosoft.portal.svc.rip.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
@@ -10,8 +13,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -42,7 +43,8 @@ class SimulationRepositoryIT {
 
   @Test
   void retrieveSimulation() {
-    simulationRepository.save(new Simulation());
+    simulationRepository.save(new Simulation(0, 0, BigDecimal.ONE, BigDecimal.ONE,
+                                             List.of(BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.TEN)));
 
     assertThat(simulationRepository.findById(1l)).isNotNull();
   }

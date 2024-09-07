@@ -1,10 +1,11 @@
 package com.insilicosoft.portal.svc.rip.event;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-public record SimulationMessage(int modelId, Float pacingFrequency, Float pacingMaxTime,
-                                List<Float> plasmaPoints) {
+public record SimulationMessage(long simulationId, int modelId, BigDecimal pacingFrequency,
+                                BigDecimal pacingMaxTime, List<BigDecimal> plasmaPoints) {
 
   public SimulationMessage {
     Objects.requireNonNull(pacingFrequency, "pacingFrequency is required");

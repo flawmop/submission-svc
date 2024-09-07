@@ -1,7 +1,6 @@
 package com.insilicosoft.portal.svc.rip.controller;
 
 import java.io.IOException ;
-import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger ;
 import org.slf4j.LoggerFactory ;
@@ -15,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.insilicosoft.portal.svc.rip.RipIdentifiers;
 import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
+import com.insilicosoft.portal.svc.rip.exception.InputVerificationException;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
+import com.insilicosoft.portal.svc.rip.service.SubmissionService;
 
 import io.micrometer.core.annotation.Timed;
 
@@ -26,19 +27,23 @@ import io.micrometer.core.annotation.Timed;
  */
 @Controller
 @RequestMapping(RipIdentifiers.REQUEST_MAPPING_RUN)
-public class FileAsyncUploadController {
+public class FileUploadController {
 
-  private static final Logger log = LoggerFactory.getLogger(FileAsyncUploadController.class);
+  private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
   private final InputProcessorService inputProcessorService;
+  private final SubmissionService submissionService;
 
   /**
    * Initialising constructor.
    *
    * @param inputProcessorService Input processing implementation.
+   * @param submissionService Submission service.
    */
-  public FileAsyncUploadController(final InputProcessorService inputProcessorService) {
+  public FileUploadController(final InputProcessorService inputProcessorService,
+                                   final SubmissionService submissionService) {
     this.inputProcessorService = inputProcessorService;
+    this.submissionService = submissionService;
   }
 
   // TODO Remove GET mapping in /run endpoint controller
@@ -57,13 +62,14 @@ public class FileAsyncUploadController {
    */
   @PostMapping(RipIdentifiers.REQUEST_MAPPING_UPLOAD_ASYNC)
   @Timed(value = "run.handle-file-upload", description = "POST Multipart request for file upload")
-  public CompletableFuture<ResponseEntity<String>> handleFileUpload(final @RequestPart(required=false,
-                                                                                       value=RipIdentifiers.PARAM_NAME_SIMULATION_FILE)
-                                                                          MultipartFile file)
-                                                   throws FileProcessingException {
+  public ResponseEntity<String> handleFileUpload(final @RequestPart(required=false,
+                                                                    value=RipIdentifiers.PARAM_NAME_SIMULATION_FILE)
+                                                       MultipartFile file)
+                                                 throws FileProcessingException,
+                                                        InputVerificationException {
 
     if (file == null) {
-      final String message = "The POST request must supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "'";
+      final String message = "No Multipart file! Did you supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "' in the POST request?";
       log.warn("~handleFileUpload() : ".concat(message));
       throw new FileProcessingException(message);
     }
@@ -80,9 +86,11 @@ public class FileAsyncUploadController {
       throw new FileProcessingException(e.getMessage());
     }
 
-    inputProcessorService.processAsync(fileByteArray);
+    final long submissionId = submissionService.submit();
 
-    return CompletableFuture.completedFuture(ResponseEntity.ok(fileName));
+    inputProcessorService.process(submissionId, fileByteArray);
+
+    return ResponseEntity.ok(String.valueOf(submissionId));
   }
 
 }

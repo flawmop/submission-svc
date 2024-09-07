@@ -2,8 +2,6 @@ package com.insilicosoft.portal.svc.rip.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +19,7 @@ import com.insilicosoft.portal.svc.rip.persistence.repository.SimulationReposito
 public class InputProcessorServiceTest {
 
   private InputProcessorService inputProcessorService;
+  private final long submissionEntityId = 1l;
 
   @Mock
   private Simulation mockSimulation;
@@ -28,11 +27,14 @@ public class InputProcessorServiceTest {
   private SimulationRepository mockSimulationRepository;
   @Mock
   private StreamBridge mockStreamBridge;
+  @Mock
+  private SubmissionService mockSubmissionService;
 
   @BeforeEach
   void setUp() {
     this.inputProcessorService = new InputProcessorServiceImpl(mockSimulationRepository,
-                                                               mockStreamBridge);
+                                                               mockStreamBridge,
+                                                               mockSubmissionService);
   }
 
   @DisplayName("Fail if content is not valid.")
@@ -40,32 +42,29 @@ public class InputProcessorServiceTest {
   void testFailIfInvalidFileContent() {
     // Application-defined exception message
     final byte[] file1 = new byte[0];
-    String message = "Content must be a JSON object";
     FileProcessingException e = assertThrows(FileProcessingException.class, () -> {
-      inputProcessorService.processAsync(file1);
+      inputProcessorService.process(submissionEntityId, file1);
     });
-    assertThat(e.getMessage()).isEqualTo(message);
+    assertThat(e.getMessage()).isEqualTo("Content must be a JSON object");
 
     // Library-defined exception message 
     final byte[] file2 = "{".getBytes();
-    message = "Unexpected end-of-input";
     e = assertThrows(FileProcessingException.class, () -> {
-      inputProcessorService.processAsync(file2);
+      inputProcessorService.process(submissionEntityId, file2);
     });
-    assertThat(e.getMessage()).startsWith(message);
+    assertThat(e.getMessage()).startsWith("Unexpected end-of-input");
+
+    final byte[] file3 = "{}".getBytes();
+    e = assertThrows(FileProcessingException.class, () -> {
+      inputProcessorService.process(submissionEntityId, file3);
+    });
+    assertThat(e.getMessage()).isEqualTo("Could not generate any simulations");
   }
 
   @DisplayName("Success if content is valid.")
   @Test
   void testSuccessIfValidFileContent() throws FileProcessingException {
-
-    when(mockSimulationRepository.save(any(Simulation.class)))
-        .thenReturn(mockSimulation);
     // No simulations generated!
-
-    final byte[] file = "{}".getBytes();
-    inputProcessorService.processAsync(file);
-
   }
 
 }

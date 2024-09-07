@@ -32,8 +32,9 @@ import dasniko.testcontainers.keycloak.KeycloakContainer;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Testcontainers
-public class FileAsyncUploadControllerE2E {
+public class FileUploadControllerE2E {
 
+  private static final String message = "No Multipart file! Did you supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "' in the POST request?";
   private static final String postUrl = RipIdentifiers.REQUEST_MAPPING_RUN.concat(RipIdentifiers.REQUEST_MAPPING_UPLOAD_ASYNC);
   private static final HttpHeaders httpHeaders = new HttpHeaders();
   private static final String goodRequestFileName = "request_good.json";
@@ -82,7 +83,7 @@ public class FileAsyncUploadControllerE2E {
                    .exchange()
                    .expectStatus().isOk()
                    .expectBody(String.class).value(body -> {
-                     assertThat(body).isEqualTo("All good from FileAsyncUploadController->InputProcessorService!!");
+                     assertThat(body).isEqualTo("All good from FileUploadController->InputProcessorService!!");
                    });
     }
   }
@@ -132,7 +133,7 @@ public class FileAsyncUploadControllerE2E {
                   .exchange()
                   .expectStatus().isBadRequest()
                   .expectBody(String.class).value(body -> {
-                    assertThat(body).isEqualTo("The POST request must supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "'");
+                    assertThat(body).isEqualTo(message);
                   });
     }
 
@@ -140,7 +141,8 @@ public class FileAsyncUploadControllerE2E {
     @Test
     void success() {
       var multipartBodyBuilder = new MultipartBodyBuilder();
-      multipartBodyBuilder.part(RipIdentifiers.PARAM_NAME_SIMULATION_FILE,  new FileSystemResource(goodPath));
+      multipartBodyBuilder.part(RipIdentifiers.PARAM_NAME_SIMULATION_FILE,
+                                new FileSystemResource(goodPath));
       webTestClient.post()
                    .uri(postUrl)
                    .headers(headers -> {
@@ -150,8 +152,9 @@ public class FileAsyncUploadControllerE2E {
                   .exchange()
                   .expectStatus().isOk()
                   .expectBody(String.class).value(body -> {
-                    assertThat(body).isEqualTo(goodRequestFileName);
+                    assertThat(body).isEqualTo("1");
                   });
+;
     }
   }
 

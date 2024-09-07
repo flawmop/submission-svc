@@ -5,10 +5,10 @@
       "pacingMaxTime": 5,
       "plasmaPoints": [
         0,
-	0.3,
-	1,
-	3,
-	10
+        0.3,
+        1,
+        3,
+        10
       ],
       "pacingFrequency": 0.5
     },
@@ -17,12 +17,12 @@
       "pacingMaxTime": 5,
       "plasmaPoints": [
         0,
-	0.3,
-	1,
-	3,
-	10,
-	30,
-	100
+        0.3,
+        1,
+        3,
+        10,
+        30,
+        100
       ],
       "pacingFrequency": 1.0
     }

@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
 import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
+import com.insilicosoft.portal.svc.rip.exception.InputVerificationException;
 
 /**
  * REST controller advice.
@@ -25,6 +26,17 @@ public class ControllerAdvice {
    */
   @ExceptionHandler(FileProcessingException.class)
   public ResponseEntity<String> handleFileProcessingProblem(FileProcessingException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+  }
+
+  /**
+   * Something we're going to handle.
+   *
+   * @param e Input verification exception.
+   * @return Response entity.
+   */
+  @ExceptionHandler(InputVerificationException.class)
+  public ResponseEntity<String> handleInputVerificationProblem(InputVerificationException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 

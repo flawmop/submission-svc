@@ -2,11 +2,12 @@ package com.insilicosoft.portal.svc.rip.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,29 +19,34 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.insilicosoft.portal.svc.rip.RipIdentifiers;
 import com.insilicosoft.portal.svc.rip.exception.FileProcessingException;
+import com.insilicosoft.portal.svc.rip.exception.InputVerificationException;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
+import com.insilicosoft.portal.svc.rip.service.SubmissionService;
 
 @ExtendWith(MockitoExtension.class)
-public class FileAsyncUploadControllerTest {
+public class FileUploadControllerTest {
 
-  private static final String message = "The POST request must supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "'";
+  private static final String message = "No Multipart file! Did you supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "' in the POST request?";
 
-  private FileAsyncUploadController controller;
+  private FileUploadController controller;
 
   @Captor
   private ArgumentCaptor<byte[]> captorBytes;
+  @Captor
+  private ArgumentCaptor<Long> captorLong;
 
   @Mock
   private InputProcessorService mockInputProcessorService;
+  @Mock
+  private SubmissionService mockSubmissionService;
 
   @BeforeEach
   void setUp() {
-    controller = new FileAsyncUploadController(mockInputProcessorService);
+    controller = new FileUploadController(mockInputProcessorService, mockSubmissionService);
   }
 
   @DisplayName("Test GET method(s)")
@@ -49,11 +55,11 @@ public class FileAsyncUploadControllerTest {
     @DisplayName("Success")
     @Test
     void success() {
-      String message = "Test get message";
+      var message = "Test get message";
 
       when(mockInputProcessorService.get()).thenReturn(message);
 
-      ResponseEntity<String> response = controller.get();
+      var response = controller.get();
 
       assertThat(response.getBody()).isEqualTo(message);
     }
@@ -73,19 +79,21 @@ public class FileAsyncUploadControllerTest {
 
     @DisplayName("Success on upload")
     @Test
-    void failOn() throws FileProcessingException, InterruptedException, ExecutionException {
+    void failOn() throws FileProcessingException, InputVerificationException {
       var bytes = "Hello, World!".getBytes();
       var fileName = "request.json";
-      MockMultipartFile file = new MockMultipartFile("file", fileName, MediaType.TEXT_PLAIN_VALUE, 
+      MockMultipartFile file = new MockMultipartFile("file", fileName, MediaType.TEXT_PLAIN_VALUE,
                                                      bytes);
 
-      doNothing().when(mockInputProcessorService).processAsync(captorBytes.capture());
+      var submissionEntityId = 1l;
+      when(mockSubmissionService.submit()).thenReturn(submissionEntityId);
+      doNothing().when(mockInputProcessorService).process(anyLong(), any(byte[].class));
 
-      ResponseEntity<String> response = controller.handleFileUpload(file).get();
+      var response = controller.handleFileUpload(file);
 
-      assertThat(response.getBody()).isEqualTo(fileName);
-
-      verify(mockInputProcessorService).processAsync(captorBytes.capture());
+      verify(mockInputProcessorService, only()).process(captorLong.capture(), captorBytes.capture());
+      assertThat(response.getBody()).isEqualTo(String.valueOf(submissionEntityId));
+      assertThat(captorLong.getValue()).isSameAs(submissionEntityId);
       assertThat(captorBytes.getValue()).isEqualTo(bytes);
     }
   }

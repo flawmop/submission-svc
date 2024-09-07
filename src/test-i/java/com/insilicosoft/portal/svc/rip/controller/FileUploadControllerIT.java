@@ -26,10 +26,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.insilicosoft.portal.svc.rip.RipIdentifiers;
 import com.insilicosoft.portal.svc.rip.config.SecurityConfig;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
+import com.insilicosoft.portal.svc.rip.service.SubmissionService;
 
-@WebMvcTest(FileAsyncUploadController.class)
+@WebMvcTest(FileUploadController.class)
 @Import(SecurityConfig.class)
-public class FileAsyncUploadControllerIT {
+public class FileUploadControllerIT {
 
   private static final MediaType textWithCharset = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
   private static final GrantedAuthority userRole = new SimpleGrantedAuthority("ROLE_".concat(RipIdentifiers.ROLE_USER));
@@ -41,6 +42,8 @@ public class FileAsyncUploadControllerIT {
   private InputProcessorService mockInputProcessorService;
   @MockBean
   private JwtDecoder mockJwtDecoder;
+  @MockBean
+  private SubmissionService mockSubmissionService;
 
   @DisplayName("Test GET method(s)")
   @Nested
