@@ -28,11 +28,11 @@ import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 import com.insilicosoft.portal.svc.rip.service.SubmissionService;
 
 @ExtendWith(MockitoExtension.class)
-public class FileUploadControllerTest {
+public class SubmissionControllerTest {
 
   private static final String message = "No Multipart file! Did you supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "' in the POST request?";
 
-  private FileUploadController controller;
+  private SubmissionController controller;
 
   @Captor
   private ArgumentCaptor<byte[]> captorBytes;
@@ -46,7 +46,7 @@ public class FileUploadControllerTest {
 
   @BeforeEach
   void setUp() {
-    controller = new FileUploadController(mockInputProcessorService, mockSubmissionService);
+    controller = new SubmissionController(mockInputProcessorService, mockSubmissionService);
   }
 
   @DisplayName("Test GET method(s)")
@@ -72,7 +72,7 @@ public class FileUploadControllerTest {
     @Test
     void failOnBadParameterNaming() {
       final FileProcessingException e = assertThrows(FileProcessingException.class, () -> {
-        controller.handleFileUpload(null);
+        controller.createSimulation(null);
       });
       assertThat(e.getMessage()).isEqualTo(message);
     }
@@ -89,7 +89,7 @@ public class FileUploadControllerTest {
       when(mockSubmissionService.submit()).thenReturn(submissionEntityId);
       doNothing().when(mockInputProcessorService).process(anyLong(), any(byte[].class));
 
-      var response = controller.handleFileUpload(file);
+      var response = controller.createSimulation(file);
 
       verify(mockInputProcessorService, only()).process(captorLong.capture(), captorBytes.capture());
       assertThat(response.getBody()).isEqualTo(String.valueOf(submissionEntityId));

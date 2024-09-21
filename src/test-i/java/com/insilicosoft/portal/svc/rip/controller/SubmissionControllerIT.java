@@ -28,9 +28,9 @@ import com.insilicosoft.portal.svc.rip.config.SecurityConfig;
 import com.insilicosoft.portal.svc.rip.service.InputProcessorService;
 import com.insilicosoft.portal.svc.rip.service.SubmissionService;
 
-@WebMvcTest(FileUploadController.class)
+@WebMvcTest(SubmissionController.class)
 @Import(SecurityConfig.class)
-public class FileUploadControllerIT {
+public class SubmissionControllerIT {
 
   private static final MediaType textWithCharset = new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8);
   private static final GrantedAuthority userRole = new SimpleGrantedAuthority("ROLE_".concat(RipIdentifiers.ROLE_USER));
@@ -55,7 +55,7 @@ public class FileUploadControllerIT {
 
       when(mockInputProcessorService.get()).thenReturn(getMessage);
 
-      mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_RUN).with(jwt().authorities(userRole)))
+      mockMvc.perform(get(RipIdentifiers.REQUEST_MAPPING_SUBMISSION).with(jwt().authorities(userRole)))
              //.andDo(print())
              .andExpect(status().isOk())
              .andExpect(content().contentType(textWithCharset))

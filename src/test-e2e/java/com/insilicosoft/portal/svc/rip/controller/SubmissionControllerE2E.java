@@ -32,10 +32,10 @@ import dasniko.testcontainers.keycloak.KeycloakContainer;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Testcontainers
-public class FileUploadControllerE2E {
+public class SubmissionControllerE2E {
 
   private static final String message = "No Multipart file! Did you supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "' in the POST request?";
-  private static final String postUrl = RipIdentifiers.REQUEST_MAPPING_RUN.concat(RipIdentifiers.REQUEST_MAPPING_UPLOAD_ASYNC);
+  private static final String postUrl = RipIdentifiers.REQUEST_MAPPING_SUBMISSION.concat(RipIdentifiers.REQUEST_MAPPING_SIMULATION);
   private static final HttpHeaders httpHeaders = new HttpHeaders();
   private static final String goodRequestFileName = "request_good.json";
   private static final Path goodPath = Path.of("src",  "test", "resources", "requests", goodRequestFileName);
@@ -76,14 +76,14 @@ public class FileUploadControllerE2E {
     @Test
     void success() {
       webTestClient.get()
-                   .uri(RipIdentifiers.REQUEST_MAPPING_RUN)
+                   .uri(RipIdentifiers.REQUEST_MAPPING_SUBMISSION)
                    .headers(headers -> {
                      headers.setBearerAuth(bjornTokens.accessToken);
                    })
                    .exchange()
                    .expectStatus().isOk()
                    .expectBody(String.class).value(body -> {
-                     assertThat(body).isEqualTo("All good from FileUploadController->InputProcessorService!!");
+                     assertThat(body).isEqualTo("All good from SubmissionController->InputProcessorService!!");
                    });
     }
   }
@@ -154,7 +154,7 @@ public class FileUploadControllerE2E {
                   .expectBody(String.class).value(body -> {
                     assertThat(body).isEqualTo("1");
                   });
-;
+
     }
   }
 

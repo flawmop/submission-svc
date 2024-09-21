@@ -21,15 +21,15 @@ import com.insilicosoft.portal.svc.rip.service.SubmissionService;
 import io.micrometer.core.annotation.Timed;
 
 /**
- * File upload controller
+ * Submission controller
  *
  * @author geoff
  */
 @Controller
-@RequestMapping(RipIdentifiers.REQUEST_MAPPING_RUN)
-public class FileUploadController {
+@RequestMapping(RipIdentifiers.REQUEST_MAPPING_SUBMISSION)
+public class SubmissionController {
 
-  private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
+  private static final Logger log = LoggerFactory.getLogger(SubmissionController.class);
 
   private final InputProcessorService inputProcessorService;
   private final SubmissionService submissionService;
@@ -40,29 +40,28 @@ public class FileUploadController {
    * @param inputProcessorService Input processing implementation.
    * @param submissionService Submission service.
    */
-  public FileUploadController(final InputProcessorService inputProcessorService,
-                                   final SubmissionService submissionService) {
+  public SubmissionController(final InputProcessorService inputProcessorService,
+                              final SubmissionService submissionService) {
     this.inputProcessorService = inputProcessorService;
     this.submissionService = submissionService;
   }
 
-  // TODO Remove GET mapping in /run endpoint controller
   @GetMapping()
-  @Timed(value = "run.get", description = "GET request")
+  @Timed(value = "submission.get", description = "GET request")
   public ResponseEntity<String> get() {
     return ResponseEntity.ok(inputProcessorService.get());
   }
 
   /**
-   * Handle the file uploading from a {@code POST} request.
+   * Handle the file uploading from a simulation {@code POST} request.
    *
    * @param file File being uploaded.
    * @return Response entity.
    * @throws FileProcessingException If problems processing file.
    */
-  @PostMapping(RipIdentifiers.REQUEST_MAPPING_UPLOAD_ASYNC)
-  @Timed(value = "run.handle-file-upload", description = "POST Multipart request for file upload")
-  public ResponseEntity<String> handleFileUpload(final @RequestPart(required=false,
+  @PostMapping(RipIdentifiers.REQUEST_MAPPING_SIMULATION)
+  @Timed(value = "submission.simulation", description = "Simulation POST Multipart request")
+  public ResponseEntity<String> createSimulation(final @RequestPart(required=false,
                                                                     value=RipIdentifiers.PARAM_NAME_SIMULATION_FILE)
                                                        MultipartFile file)
                                                  throws FileProcessingException,
@@ -70,7 +69,7 @@ public class FileUploadController {
 
     if (file == null) {
       final String message = "No Multipart file! Did you supply the parameter '" + RipIdentifiers.PARAM_NAME_SIMULATION_FILE + "' in the POST request?";
-      log.warn("~handleFileUpload() : ".concat(message));
+      log.warn("~createSimulation() : ".concat(message));
       throw new FileProcessingException(message);
     }
 
@@ -81,7 +80,7 @@ public class FileUploadController {
     try {
       fileByteArray = file.getBytes();
     } catch (IOException e) {
-      log.warn("~handleFileUpload() : IOException processing '{}' (Exception message '{}')",
+      log.warn("~createSimulation() : IOException processing '{}' (Exception message '{}')",
                fileName, e.getMessage());
       throw new FileProcessingException(e.getMessage());
     }

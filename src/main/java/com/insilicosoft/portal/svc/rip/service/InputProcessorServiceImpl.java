@@ -70,7 +70,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
 
   @Override
   public String get() {
-    return "All good from FileUploadController->InputProcessorService!!";
+    return "All good from SubmissionController->InputProcessorService!!";
   }
 
   @Override
