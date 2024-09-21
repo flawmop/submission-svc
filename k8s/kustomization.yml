@@ -11,6 +11,6 @@ configMapGenerator:
       - application.yml
 
 generatorOptions:
-  disableNameSuffixHash: true
+  #disableNameSuffixHash: true
   labels:
     app: simulation-svc
