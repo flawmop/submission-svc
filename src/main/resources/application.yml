@@ -7,7 +7,7 @@ com:
       core-pool-size: 2
       max-pool-size: 2
       queue-capacity: 50
-      thread-name-prefix: ~Async-dflt-
+      thread-name-prefix: ~simsvc-dflt-
 
 logging:
   level:
@@ -38,7 +38,7 @@ server:
 
 spring:
   application:
-    name: rip-svc
+    name: simulation-svc
   cloud:
     stream:
       bindings:
