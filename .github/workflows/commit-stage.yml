@@ -4,8 +4,8 @@ on: push
 env:
   OWNER: flawmop
   REGISTRY: ghcr.io
-  IMAGE_NAME: flawmop/run-input-processing-svc
-  APP_REPO: run-input-processing-svc
+  IMAGE_NAME: flawmop/simulation-svc
+  APP_REPO: simulation-svc
   DEPLOY_REPO: portal-deploy
   VERSION: ${{ github.sha }}
 

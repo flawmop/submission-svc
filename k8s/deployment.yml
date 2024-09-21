@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: run-input-processing-svc
+  name: simulation-svc
   labels:
-    app: run-input-processing-svc
+    app: simulation-svc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: run-input-processing-svc
+      app: simulation-svc
   template:
     metadata:
       labels:
-        app: run-input-processing-svc
+        app: simulation-svc
     spec:
       containers:
-        - name: run-input-processing-svc
-          image: ghcr.io/flawmop/run-input-processing-svc
+        - name: simulation-svc
+          image: ghcr.io/flawmop/simulation-svc
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
@@ -25,9 +25,9 @@ spec:
           ports:
             - containerPort: 9002
           volumeMounts:
-            - name: run-input-processing-config-volume
+            - name: simulation-config-volume
               mountPath: /workspace/config
       volumes:
-        - name: run-input-processing-config-volume
+        - name: simulation-config-volume
           configMap:
-            name: run-input-processing-config
+            name: simulation-config
