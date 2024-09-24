@@ -9,7 +9,7 @@ concurrency: acceptance
 env:
   OWNER: flawmop
   REGISTRY: ghcr.io
-  APP_REPO: simulation-svc
+  APP_REPO: submission-svc
   DEPLOY_REPO: portal-deploy
   VERSION: ${{ github.sha }}
 

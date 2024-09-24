@@ -6,11 +6,11 @@ resources:
   - service.yml
 
 configMapGenerator:
-  - name: simulation-config
+  - name: submission-config
     files:
       - application.yml
 
 generatorOptions:
   #disableNameSuffixHash: true
   labels:
-    app: simulation-svc
+    app: submission-svc

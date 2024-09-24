@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: simulation-svc
+  name: submission-svc
   labels:
-    app: simulation-svc
+    app: submission-svc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: simulation-svc
+      app: submission-svc
   template:
     metadata:
       labels:
-        app: simulation-svc
+        app: submission-svc
     spec:
       containers:
-        - name: simulation-svc
-          image: ghcr.io/flawmop/simulation-svc
+        - name: submission-svc
+          image: ghcr.io/flawmop/submission-svc
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
@@ -25,9 +25,9 @@ spec:
           ports:
             - containerPort: 9002
           volumeMounts:
-            - name: simulation-config-volume
+            - name: submission-config-volume
               mountPath: /workspace/config
       volumes:
-        - name: simulation-config-volume
+        - name: submission-config-volume
           configMap:
-            name: simulation-config
+            name: submission-config

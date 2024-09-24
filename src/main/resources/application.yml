@@ -38,7 +38,7 @@ server:
 
 spring:
   application:
-    name: simulation-svc
+    name: submission-svc
   cloud:
     stream:
       bindings:
