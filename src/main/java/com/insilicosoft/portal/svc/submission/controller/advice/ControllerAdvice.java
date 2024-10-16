@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
+import com.insilicosoft.portal.svc.submission.exception.EntityNotAccessibleException;
 import com.insilicosoft.portal.svc.submission.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.submission.exception.InputVerificationException;
 
@@ -17,6 +18,17 @@ import com.insilicosoft.portal.svc.submission.exception.InputVerificationExcepti
  */
 @RestControllerAdvice
 public class ControllerAdvice {
+
+  /**
+   * Something we're going to handle.
+   * 
+   * @param e Entity not accessible exception.
+   * @return Response entity.
+   */
+  @ExceptionHandler(EntityNotAccessibleException.class)
+  public ResponseEntity<String> handleEntityNotAccessible(EntityNotAccessibleException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+  }
 
   /**
    * Something we're going to handle.

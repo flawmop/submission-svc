@@ -11,9 +11,6 @@ import com.insilicosoft.portal.svc.submission.persistence.entity.Submission;
  */
 public interface InputProcessorService {
 
-  // TODO Remove
-  String get();
-
   /**
    * Process a file.
    *

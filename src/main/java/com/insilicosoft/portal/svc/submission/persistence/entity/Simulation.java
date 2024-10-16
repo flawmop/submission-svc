@@ -21,6 +21,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -61,13 +62,17 @@ public class Simulation {
   @Column(nullable = false)
   private BigDecimal pacingMaxTime;
 
-  @ElementCollection
-  @CollectionTable(name = "simulation_plasmapoints", joinColumns = @JoinColumn(name = "entityId"))
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "simulation_plasmapoints",
+                   foreignKey = @ForeignKey(name = "simulation_fk"),
+                   joinColumns = @JoinColumn(name = "entityId"))
   @Column(nullable = false)
   private List<BigDecimal> plasmaPoints = new ArrayList<>();
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "simulation_message", joinColumns = @JoinColumn(name = "entityId"))
+  @CollectionTable(name = "simulation_message",
+                   foreignKey = @ForeignKey(name = "simulation_fk"),
+                   joinColumns = @JoinColumn(name = "entityId"))
   @Column(nullable = false)
   private Set<Message> messages = new HashSet<>();
 

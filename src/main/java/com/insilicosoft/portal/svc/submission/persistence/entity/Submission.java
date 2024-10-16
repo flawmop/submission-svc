@@ -21,6 +21,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -44,7 +45,10 @@ public class Submission {
   private State state;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "submission_message", joinColumns = @JoinColumn(name = "entityId"))
+  @CollectionTable(name = "submission_message",
+                   foreignKey = @ForeignKey(name = "simulation_fk"),
+                   joinColumns = @JoinColumn(name = "entityId"))
+  @Column(nullable = false)
   private Set<Message> messages = new HashSet<>();
 
   // See JPA auditing
@@ -109,12 +113,21 @@ public class Submission {
     return entityId;
   }
 
+  /**
+   * Retrieve the Submission state.
+   * 
+   * @return the state
+   */
+  public State getState() {
+    return state;
+  }
+
   // Boilerplate implementations
 
   @Override
   public String toString() {
-    return "Submission [entityId=" + entityId + ", state=" + state + ", createdDate=" + createdDate + ", createdBy="
-        + createdBy + "]";
+    return "Submission [entityId=" + entityId + ", state=" + state + ", messages=" + messages + ", createdDate="
+        + createdDate + ", createdBy=" + createdBy + "]";
   }
 
 }

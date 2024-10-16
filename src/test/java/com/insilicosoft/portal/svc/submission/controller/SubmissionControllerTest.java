@@ -9,6 +9,9 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,12 +21,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.insilicosoft.portal.svc.submission.SubmissionIdentifiers;
+import com.insilicosoft.portal.svc.submission.exception.EntityNotAccessibleException;
 import com.insilicosoft.portal.svc.submission.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.submission.exception.InputVerificationException;
+import com.insilicosoft.portal.svc.submission.persistence.entity.Submission;
 import com.insilicosoft.portal.svc.submission.service.InputProcessorService;
 import com.insilicosoft.portal.svc.submission.service.SubmissionService;
 
@@ -42,11 +51,14 @@ public class SubmissionControllerTest {
   @Mock
   private InputProcessorService mockInputProcessorService;
   @Mock
+  private Submission mockSubmission;
+  @Mock
   private SubmissionService mockSubmissionService;
 
   @BeforeEach
   void setUp() {
     controller = new SubmissionController(mockInputProcessorService, mockSubmissionService);
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));
   }
 
   @DisplayName("Test GET method(s)")
@@ -54,14 +66,14 @@ public class SubmissionControllerTest {
   class GetMethods {
     @DisplayName("Success")
     @Test
-    void success() {
-      var message = "Test get message";
+    void success() throws EntityNotAccessibleException {
+      var submissionId = 1l;
 
-      when(mockInputProcessorService.get()).thenReturn(message);
+      when(mockSubmissionService.retrieve(submissionId)).thenReturn(null);
 
-      var response = controller.get();
+      var submission = controller.get(submissionId);
 
-      assertThat(response.getBody()).isEqualTo(message);
+      assertThat(submission).isNull();
     }
   }
 
@@ -79,20 +91,23 @@ public class SubmissionControllerTest {
 
     @DisplayName("Success on upload")
     @Test
-    void failOn() throws FileProcessingException, InputVerificationException {
+    void successOnUpload() throws FileProcessingException, InputVerificationException,
+                                  URISyntaxException {
       var bytes = "Hello, World!".getBytes();
       var fileName = "request.json";
       MockMultipartFile file = new MockMultipartFile("file", fileName, MediaType.TEXT_PLAIN_VALUE,
                                                      bytes);
 
       var submissionEntityId = 1l;
-      when(mockSubmissionService.submit()).thenReturn(submissionEntityId);
+      when(mockSubmissionService.create()).thenReturn(mockSubmission);
+      when(mockSubmission.getEntityId()).thenReturn(submissionEntityId);
       doNothing().when(mockInputProcessorService).process(anyLong(), any(byte[].class));
 
       var response = controller.createSimulation(file);
 
       verify(mockInputProcessorService, only()).process(captorLong.capture(), captorBytes.capture());
-      assertThat(response.getBody()).isEqualTo(String.valueOf(submissionEntityId));
+      assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+      assertThat(response.getHeaders().getLocation()).isEqualTo(new URI("http://localhost/1"));
       assertThat(captorLong.getValue()).isSameAs(submissionEntityId);
       assertThat(captorBytes.getValue()).isEqualTo(bytes);
     }

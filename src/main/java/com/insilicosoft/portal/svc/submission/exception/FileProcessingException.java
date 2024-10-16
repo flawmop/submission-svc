@@ -10,7 +10,7 @@ package com.insilicosoft.portal.svc.submission.exception;
  */
 public class FileProcessingException extends Exception {
 
-  private static final long serialVersionUID = - 8135834798094531867L ;
+  private static final long serialVersionUID = -8135834798094531867L;
 
   /**
    * Initialising constructor.

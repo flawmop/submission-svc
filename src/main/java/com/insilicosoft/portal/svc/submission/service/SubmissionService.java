@@ -3,13 +3,31 @@ package com.insilicosoft.portal.svc.submission.service;
 import java.util.Map;
 import java.util.Set;
 
+import com.insilicosoft.portal.svc.submission.exception.EntityNotAccessibleException;
 import com.insilicosoft.portal.svc.submission.persistence.entity.Message;
 import com.insilicosoft.portal.svc.submission.persistence.entity.Submission;
 
 /**
- * User {@link Submission} service. 
+ * User {@link Submission} service.
+ * 
+ * @author geoff
  */
 public interface SubmissionService {
+
+  /**
+   * Creates a new {@link Submission}.
+   * 
+   * @return Submission.
+   */
+  Submission create();
+
+  /**
+   * Delete the {@link Submission} (and all linked entities!).
+   * 
+   * @param submissionId Submission identifier.
+   * @throws EntityNotAccessibleException If identified Submission not accessible.
+   */
+  void delete(long submissionId) throws EntityNotAccessibleException;
 
   /**
    * Reject the {@link Submission} due to file processing problems.
@@ -28,10 +46,12 @@ public interface SubmissionService {
   void rejectOnInvalidInput(long submissionId, Map<String, Set<Message>> problems);
 
   /**
-   * {@link Submission} of some kind.
+   * Retrieve the {@link Submission} identified by the {@literal submissionId}.
    * 
-   * @return Submission identifier.
+   * @param submissionId Submission identifier.
+   * @return Submission
+   * @throws EntityNotAccessibleException If identified Submission not accessible.
    */
-  long submit();
+  Submission retrieve(long submissionId) throws EntityNotAccessibleException;
 
 }

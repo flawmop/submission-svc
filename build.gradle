@@ -112,6 +112,7 @@ testing {
       }
       dependencies {
         implementation "com.github.dasniko:testcontainers-keycloak:${tcKeycloakVersion}"
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'                      // JdbcTemplate, @Transactional
         implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
         implementation 'org.springframework.security:spring-security-test'
         implementation 'org.testcontainers:junit-jupiter'

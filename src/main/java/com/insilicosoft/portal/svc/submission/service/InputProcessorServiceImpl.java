@@ -69,11 +69,6 @@ public class InputProcessorServiceImpl implements InputProcessorService {
   }
 
   @Override
-  public String get() {
-    return "All good from SubmissionController->InputProcessorService!!";
-  }
-
-  @Override
   public void process(final long submissionId, final byte[] file) throws FileProcessingException,
                                                                          InputVerificationException {
     final String content = new String(file, UTF_8);
