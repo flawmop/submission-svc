@@ -30,20 +30,20 @@ public interface SubmissionService {
   void delete(long submissionId) throws EntityNotAccessibleException;
 
   /**
-   * Reject the {@link Submission} due to file processing problems.
-   * 
-   * @param submissionId Affected submission identifier.
-   * @param problem Problem encountered.
-   */
-  void rejectOnFileProcessing(long submissionId, Message problem);
-
-  /**
-   * Reject the {@link Submission} due to input validation problems.
-   * 
+   * Reject the {@link Submission} due to problems.
+   * <p>
+   * The structure of {@code problems} is keyed on simulation identifier (preference for
+   * using optional client-defined identifier) , e.g. :
+   * <pre>
+   *   {
+   *     &lt;client simulation id | submission id(.&lt;sim 1&gt;)&gt; : [ &lt;Message&gt;, &ltMessage2&gt; ],
+   *     &lt;client simulation id | submission id(.&lt;sim 2&gt;)&gt; : [ &lt;Message&gt; ]
+   *   }
+   * </pre>
    * @param submissionId Affected submission identifier.
    * @param problems Collection of problems encountered.
    */
-  void rejectOnInvalidInput(long submissionId, Map<String, Set<Message>> problems);
+  void reject(long submissionId, Map<String, Set<Message>> problems);
 
   /**
    * Retrieve the {@link Submission} identified by the {@literal submissionId}.

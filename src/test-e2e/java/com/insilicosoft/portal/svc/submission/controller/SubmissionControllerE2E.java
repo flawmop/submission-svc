@@ -188,6 +188,7 @@ public class SubmissionControllerE2E {
       var multipartBodyBuilder = new MultipartBodyBuilder();
       multipartBodyBuilder.part(SubmissionIdentifiers.PARAM_NAME_SIMULATION_FILE,
                                 new FileSystemResource(goodPath));
+
       webTestClient.post()
                    .uri(postUrl)
                    .headers(headers -> {

@@ -26,6 +26,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 /**
  * User submission entity.
@@ -59,6 +60,10 @@ public class Submission {
   @CreatedBy
   String createdBy;
 
+  // Optimistic locking concurrency control
+  @Version
+  private Long lockVersion;
+
   // Default constructor.
 
   /**
@@ -73,26 +78,13 @@ public class Submission {
   //
 
   /**
-   * Reject the submission and populate with the problem as justification.
-   * <p>
-   * Assigns the state to {@link State.REJECTED}
-   * 
-   * @param problem Problem encountered.
-   */
-  public void rejectWithProblem(final Message problem) {
-    this.state = State.REJECTED;
-    this.messages.clear();
-    this.messages.add(problem);
-  }
-
-  /**
    * Reject the submission and populate with the problems as justification.
    * <p>
    * Assigns the state to {@link State.REJECTED}
    * 
    * @param problems Problems encountered.
    */
-  public void rejectWithProblems(Map<String, Set<Message>> problems) {
+  public void rejectWithProblems(final Map<String, Set<Message>> problems) {
     this.state = State.REJECTED;
     this.messages.clear();
     for (Map.Entry<String, Set<Message>> mapEntry : problems.entrySet()) {
@@ -127,7 +119,7 @@ public class Submission {
   @Override
   public String toString() {
     return "Submission [entityId=" + entityId + ", state=" + state + ", messages=" + messages + ", createdDate="
-        + createdDate + ", createdBy=" + createdBy + "]";
+        + createdDate + ", createdBy=" + createdBy + ", lockVersion=" + lockVersion + "]";
   }
 
 }

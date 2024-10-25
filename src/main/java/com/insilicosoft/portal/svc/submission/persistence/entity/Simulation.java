@@ -46,20 +46,20 @@ public class Simulation {
   @GeneratedValue(strategy = IDENTITY)
   private Long entityId;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private long submissionId;
 
   // Optional. How the client/user identifies the simulation
   @Column(name = "clientId")
   private String clientId;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private int modelId;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private BigDecimal pacingFrequency;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private BigDecimal pacingMaxTime;
 
   @ElementCollection(fetch = FetchType.EAGER)
@@ -67,6 +67,7 @@ public class Simulation {
                    foreignKey = @ForeignKey(name = "simulation_fk"),
                    joinColumns = @JoinColumn(name = "entityId"))
   @Column(nullable = false)
+  // TODO : Find a way to prevent updating this collection
   private List<BigDecimal> plasmaPoints = new ArrayList<>();
 
   @ElementCollection(fetch = FetchType.EAGER)
@@ -74,6 +75,7 @@ public class Simulation {
                    foreignKey = @ForeignKey(name = "simulation_fk"),
                    joinColumns = @JoinColumn(name = "entityId"))
   @Column(nullable = false)
+  // TODO : Find a way to prevent updating this collection
   private Set<Message> messages = new HashSet<>();
 
   // See JPA auditing
@@ -84,8 +86,9 @@ public class Simulation {
   @LastModifiedBy
   String lastModifiedBy;
 
+  // Optimistic locking concurrency control
   @Version
-  int version;
+  private Long lockVersion;
 
   // Default constructor.
   Simulation() {}
@@ -194,7 +197,7 @@ public class Simulation {
     return "Simulation [entityId=" + entityId + ", submissionId=" + submissionId + ", modelId=" + modelId
         + ", pacingFrequency=" + pacingFrequency + ", pacingMaxTime=" + pacingMaxTime + ", plasmaPoints=" + plasmaPoints
         + ", messages=" + messages + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedBy=" + lastModifiedBy
-        + ", version=" + version + "]";
+        + ", lockVersion=" + lockVersion + "]";
   }
 
 }

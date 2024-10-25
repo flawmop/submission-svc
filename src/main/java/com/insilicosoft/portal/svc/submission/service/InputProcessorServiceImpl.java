@@ -68,6 +68,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
     this.submissionService = submissionService;
   }
 
+  // Advice applied to this method to capture FileProcessingException
   @Override
   public void process(final long submissionId, final byte[] file) throws FileProcessingException,
                                                                          InputVerificationException {
@@ -116,20 +117,21 @@ public class InputProcessorServiceImpl implements InputProcessorService {
     if (simulations.isEmpty())
       throw new FileProcessingException("Could not generate any simulations");
 
-    Map<String, Set<Message>> problems = new HashMap<>();
-    int problemCnt = 1;
+    final Map<String, Set<Message>> problems = new HashMap<>();
+    int simulationCnt = 1;
     for (Simulation simulation: simulations) {
-      Set<Message> messages = simulation.getMessages(MessageLevel.WARN);
+      final Set<Message> messages = simulation.getMessages(MessageLevel.WARN);
       if (!messages.isEmpty()) {
+        // Simulations not yet persisted, so no entity id to use.
         problems.put(simulation.getClientId()
-                               .orElse(String.valueOf(submissionId).concat(".").concat(String.valueOf(problemCnt))),
+                               .orElse(String.valueOf(submissionId).concat(".").concat(String.valueOf(simulationCnt))),
                      messages);
-        problemCnt++;
+        simulationCnt++;
       }
     }
 
     if (!problems.isEmpty()) {
-      submissionService.rejectOnInvalidInput(submissionId, problems);
+      submissionService.reject(submissionId, problems);
       throw new InputVerificationException("Problems encountered translating the simulation input");
     }
 

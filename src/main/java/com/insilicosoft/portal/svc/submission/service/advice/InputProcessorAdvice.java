@@ -1,5 +1,10 @@
 package com.insilicosoft.portal.svc.submission.service.advice;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -17,7 +22,7 @@ import com.insilicosoft.portal.svc.submission.value.MessageLevel;
 @Component
 public class InputProcessorAdvice {
 
-  private SubmissionService submissionService;
+  private final SubmissionService submissionService;
 
   /**
    * Initialising constructor.
@@ -41,8 +46,13 @@ public class InputProcessorAdvice {
   public void handleFileProcessingException(JoinPoint joinPoint, FileProcessingException fpe)
                                             throws FileProcessingException {
     final long submissionId = Long.valueOf(joinPoint.getArgs()[0].toString());
-    submissionService.rejectOnFileProcessing(submissionId, new Message(MessageLevel.WARN,
-                                                                       fpe.getMessage()));
+
+    final Map<String, Set<Message>> problems = new HashMap<>();
+    final Set<Message> messages = new HashSet<>();
+    messages.add(new Message(MessageLevel.WARN, fpe.getMessage()));
+    problems.put(String.valueOf(submissionId), messages);
+
+    submissionService.reject(submissionId, problems);
     throw new FileProcessingException(fpe.getMessage());
   }
 

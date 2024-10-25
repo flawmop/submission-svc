@@ -15,7 +15,7 @@ public class FileProcessingException extends Exception {
   /**
    * Initialising constructor.
    * 
-   * @param message
+   * @param message Exception message.
    */
   public FileProcessingException(final String message) {
     super(message);

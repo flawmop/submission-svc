@@ -10,6 +10,8 @@ com:
       thread-name-prefix: ~simsvc-dflt-
 
 logging:
+  #file:
+  #  name: logs/submission-svc.log
   level:
     root: DEBUG
 

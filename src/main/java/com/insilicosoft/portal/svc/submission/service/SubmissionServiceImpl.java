@@ -60,17 +60,8 @@ public class SubmissionServiceImpl implements SubmissionService {
   }
 
   @Override
-  public void rejectOnFileProcessing(final long submissionId, final Message problem) {
-    log.debug("~rejectOnFileProcessing() : Invoked for id {}", submissionId);
-
-    Submission submission = submissionRepository.getReferenceById(submissionId);
-    submission.rejectWithProblem(problem);
-    submissionRepository.save(submission);
-  }
-
-  @Override
-  public void rejectOnInvalidInput(final long submissionId, final Map<String, Set<Message>> problems) {
-    log.debug("~rejectOnInvalidInput() : Invoked for id {}", submissionId);
+  public void reject(final long submissionId, final Map<String, Set<Message>> problems) {
+    log.debug("~reject() : Invoked for id {}", submissionId);
 
     Submission submission = submissionRepository.getReferenceById(submissionId);
     submission.rejectWithProblems(problems);
