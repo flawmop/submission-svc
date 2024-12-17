@@ -94,7 +94,7 @@ public class Simulation {
   Simulation() {}
 
   /**
-   * Initialising constructor.
+   * Initialising <b>and {@code verify()}ing</b> constructor.
    * 
    * @param submissionId Submission identifier.
    * @param modelId Model identifier.
@@ -109,6 +109,8 @@ public class Simulation {
     this.pacingFrequency = pacingFrequency;
     this.pacingMaxTime = pacingMaxTime;
     this.plasmaPoints = plasmaPoints;
+
+    verify();
   }
 
   // 

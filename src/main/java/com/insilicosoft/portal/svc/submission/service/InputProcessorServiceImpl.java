@@ -98,7 +98,7 @@ public class InputProcessorServiceImpl implements InputProcessorService {
           }
           switch (sectionField) {
             case simulations:
-              parseSimulations(submissionId, jsonParser, simulations);
+              parseSimulation(submissionId, jsonParser, simulations);
               break;
             default:
               final String message = "No implementation yet for document section '" + sectionName + "'";
@@ -153,8 +153,15 @@ public class InputProcessorServiceImpl implements InputProcessorService {
     }
   }
 
-  void parseSimulations(long submissionId, JsonParser jsonParser, List<Simulation> simulations)
-                       throws FileProcessingException, IOException {
+  private void parseSimulation(long submissionId, JsonParser jsonParser, List<Simulation> simulations)
+                               throws FileProcessingException, IOException {
+    JsonToken current = jsonParser.nextToken();
+    if (current != JsonToken.START_ARRAY) {
+      final String message = "'simulations' value must be an array";
+      log.warn("~process() : ".concat(message));
+      throw new FileProcessingException(message);
+    }
+
     while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
       Integer modelId = null;
       BigDecimal pacingFrequency = null;

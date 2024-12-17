@@ -64,9 +64,10 @@ public class SubmissionControllerIT {
 
       mockMvc.perform(get(url).with(jwt().authorities(userRole)))
              .andDo(print())
-             .andExpect(status().isNotFound())
-             .andExpect(content().contentType(textWithCharset))
-             .andExpect(content().string("Entity with identifier '1' was not found"));
+             .andExpectAll(
+               status().isNotFound(),
+               content().contentType(textWithCharset),
+               content().string("Entity with identifier '1' was not found"));
 
       verify(mockSubmissionService).retrieve(submissionId);
     }
@@ -81,10 +82,11 @@ public class SubmissionControllerIT {
 
       mockMvc.perform(get(url).with(jwt().authorities(userRole)))
              .andDo(print())
-             .andExpect(status().isOk())
-             .andExpect(content().contentType(applicationJson))
-             .andExpect(jsonPath("$.entityId").isEmpty())
-             .andExpect(jsonPath("$.state").value(State.CREATED.toString()));
+             .andExpectAll(
+               status().isOk(),
+               content().contentType(applicationJson),
+               jsonPath("$.entityId").isEmpty(),
+               jsonPath("$.state").value(State.CREATED.toString()));
 
       verify(mockSubmissionService).retrieve(submissionId);
     }

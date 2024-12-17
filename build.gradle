@@ -148,7 +148,7 @@ tasks.register('codeCoverageReport', JacocoReport) {
   }
 }
 
-tasks.named('check') {
+tasks.named('check').configure {
   dependsOn(test)
   dependsOn(testing.suites.test_i)
   dependsOn(testing.suites.test_e2e)

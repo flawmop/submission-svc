@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -103,13 +104,15 @@ public class SubmissionControllerTest {
       when(mockSubmission.getEntityId()).thenReturn(submissionEntityId);
       doNothing().when(mockInputProcessorService).process(anyLong(), any(byte[].class));
 
-      var response = controller.createSimulation(file);
+      final ResponseEntity<Void> response = controller.createSimulation(file);
 
       verify(mockInputProcessorService, only()).process(captorLong.capture(), captorBytes.capture());
-      assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-      assertThat(response.getHeaders().getLocation()).isEqualTo(new URI("http://localhost/1"));
       assertThat(captorLong.getValue()).isSameAs(submissionEntityId);
       assertThat(captorBytes.getValue()).isEqualTo(bytes);
+
+      assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+      assertThat(response.getHeaders().getLocation()).isEqualTo(new URI("http://localhost/1"));
+      assertThat(response.getBody()).isNull();
     }
   }
 

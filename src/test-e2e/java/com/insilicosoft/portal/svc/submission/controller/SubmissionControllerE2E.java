@@ -73,6 +73,7 @@ public class SubmissionControllerE2E {
                  () -> keycloak.getAuthServerUrl() + "realms/PolarBookshop");
   }
 
+  // TODO: Remove assertions that test for residual data in db!
   @AfterEach
   void afterEach() {
     assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "simulation")).isEqualTo(0);
@@ -104,9 +105,10 @@ public class SubmissionControllerE2E {
                      headers.setBearerAuth(bjornTokens.accessToken);
                    })
                    .exchange()
-                   .expectStatus().isNotFound()
-                   .expectHeader().contentType(textWithCharset)
-                   .expectBody(String.class).isEqualTo("Submission with identifier '1' was not found");
+                   .expectAll(
+                     rsc -> rsc.expectStatus().isNotFound(),
+                     rsc -> rsc.expectHeader().contentType(textWithCharset),
+                     rsc -> rsc.expectBody(String.class).isEqualTo("Submission with identifier '1' was not found"));
     }
   }
 
@@ -125,9 +127,10 @@ public class SubmissionControllerE2E {
                      headers.setBearerAuth(bjornTokens.accessToken);
                    })
                    .exchange()
-                   .expectStatus().isNotFound()
-                   .expectHeader().contentType(textWithCharset)
-                   .expectBody(String.class).isEqualTo("Submission with identifier '1' was not found");
+                   .expectAll(
+                     rsc -> rsc.expectStatus().isNotFound(),
+                     rsc -> rsc.expectHeader().contentType(textWithCharset),
+                     rsc -> rsc.expectBody(String.class).isEqualTo("Submission with identifier '1' was not found"));
     }
   }
 
@@ -156,8 +159,9 @@ public class SubmissionControllerE2E {
                      headers.addAll(httpHeaders);
                    })
                   .exchange()
-                  .expectStatus().is5xxServerError()
-                  .expectBody(String.class).isEqualTo("Error occurred during file upload - MultipartException");
+                  .expectAll(
+                    rsc -> rsc.expectStatus().is5xxServerError(),
+                    rsc -> rsc.expectBody(String.class).isEqualTo("Error occurred during file upload - MultipartException"));
     }
 
     @DisplayName("Fail on expected request param not supplied")
@@ -172,8 +176,9 @@ public class SubmissionControllerE2E {
                    })
                   .body(fromMultipartData(multipartBodyBuilder.build()))
                   .exchange()
-                  .expectStatus().isBadRequest()
-                  .expectBody(String.class).isEqualTo(message);
+                  .expectAll(
+                    rsc -> rsc.expectStatus().isBadRequest(),
+                    rsc -> rsc.expectBody(String.class).isEqualTo(message));
     }
   }
 
@@ -196,9 +201,10 @@ public class SubmissionControllerE2E {
                    })
                   .body(fromMultipartData(multipartBodyBuilder.build()))
                   .exchange()
-                  .expectStatus().isCreated()
-                  .expectHeader().location("http://localhost:" + port + postUrl + "/" + submissionId)
-                  .expectBody().isEmpty();
+                  .expectAll(
+                    rsc -> rsc.expectStatus().isCreated(),
+                    rsc -> rsc.expectHeader().location("http://localhost:" + port + postUrl + "/" + submissionId),
+                    rsc -> rsc.expectBody().isEmpty());
 
       webTestClient.get()
                    .uri(url, submissionId)
@@ -207,9 +213,10 @@ public class SubmissionControllerE2E {
                      headers.setBearerAuth(bjornTokens.accessToken);
                    })
                    .exchange()
-                   .expectStatus().isOk()
-                   .expectHeader().contentType(applicationJson)
-                   .expectBody().jsonPath("$.entityId").isEqualTo(submissionId);
+                   .expectAll(
+                     rsc -> rsc.expectStatus().isOk(),
+                     rsc -> rsc.expectHeader().contentType(applicationJson),
+                     rsc -> rsc.expectBody().jsonPath("$.entityId").isEqualTo(submissionId));
 
       webTestClient.delete()
                    .uri(url, submissionId)
@@ -217,8 +224,9 @@ public class SubmissionControllerE2E {
                      headers.setBearerAuth(bjornTokens.accessToken);
                    })
                    .exchange()
-                   .expectStatus().isNoContent()
-                   .expectBody().isEmpty();
+                   .expectAll(
+                     rsc -> rsc.expectStatus().isNoContent(),
+                     rsc -> rsc.expectBody().isEmpty());
     }
   }
 
