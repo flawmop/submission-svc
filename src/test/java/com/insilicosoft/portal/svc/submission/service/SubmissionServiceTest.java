@@ -62,7 +62,7 @@ public class SubmissionServiceTest {
       final EntityNotAccessibleException e = assertThrows(EntityNotAccessibleException.class, () -> {
         submissionService.delete(dummySubmissionId);
       });
-      assertThat(e.getMessage()).isEqualTo("Submission with identifier '" + dummySubmissionId + "' was not found");
+      assertThat(e.getMessage()).isEqualTo("Submission with/using identifier '" + dummySubmissionId + "' was not found");
     }
 
     @DisplayName("Success on Entity deletion")
@@ -96,7 +96,7 @@ public class SubmissionServiceTest {
       final EntityNotAccessibleException e = assertThrows(EntityNotAccessibleException.class, () -> {
         submissionService.retrieve(dummySubmissionId);
       });
-      assertThat(e.getMessage()).isEqualTo("Submission with identifier '" + dummySubmissionId + "' was not found");
+      assertThat(e.getMessage()).isEqualTo("Submission with/using identifier '" + dummySubmissionId + "' was not found");
     }
 
     @DisplayName("Success on Entity retrieval")
