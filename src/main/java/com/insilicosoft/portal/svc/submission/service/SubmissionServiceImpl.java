@@ -24,6 +24,7 @@ import jakarta.transaction.Transactional;
 public class SubmissionServiceImpl implements SubmissionService {
 
   private static final Logger log = LoggerFactory.getLogger(SubmissionServiceImpl.class);
+  private static final String repoEntity = "Submission";
 
   private final SimulationRepository simulationRepository;
   private final SubmissionRepository submissionRepository;
@@ -50,30 +51,30 @@ public class SubmissionServiceImpl implements SubmissionService {
   @Override
   @Transactional
   public void delete(final long submissionId) throws EntityNotAccessibleException {
-    log.debug("~delete() : Invoked for id {}", submissionId);
+    log.debug("~delete() : Invoked for id '{}'", submissionId);
 
-    Submission submission = submissionRepository.findById(submissionId)
-                                                .orElseThrow(() -> new EntityNotAccessibleException("Submission",
-                                                                                                    String.valueOf(submissionId)));
+    final Submission submission = submissionRepository.findById(submissionId)
+                                                      .orElseThrow(() -> new EntityNotAccessibleException(repoEntity,
+                                                                                                          String.valueOf(submissionId)));
     simulationRepository.deleteAllBySubmissionId(submissionId);
     submissionRepository.delete(submission);
   }
 
   @Override
   public void reject(final long submissionId, final Map<String, Set<Message>> problems) {
-    log.debug("~reject() : Invoked for id {}", submissionId);
+    log.debug("~reject() : Invoked for id '{}'", submissionId);
 
-    Submission submission = submissionRepository.getReferenceById(submissionId);
+    final Submission submission = submissionRepository.getReferenceById(submissionId);
     submission.rejectWithProblems(problems);
     submissionRepository.save(submission);
   }
 
   @Override
   public Submission retrieve(final long submissionId) throws EntityNotAccessibleException {
-    log.debug("~retrieve() : Invoked for id {}", submissionId);
+    log.debug("~retrieve() : Invoked for id '{}'", submissionId);
 
     return submissionRepository.findById(submissionId)
-                               .orElseThrow(() -> new EntityNotAccessibleException("Submission",
+                               .orElseThrow(() -> new EntityNotAccessibleException(repoEntity,
                                                                                    String.valueOf(submissionId)));
   }
 

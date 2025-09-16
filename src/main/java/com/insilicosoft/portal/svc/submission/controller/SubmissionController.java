@@ -69,7 +69,7 @@ public class SubmissionController {
   }
 
   /**
-   * Handle the file uploading from a simulation {@code POST} request.
+   * Handle the file uploading from a simulation submission {@code POST} request.
    *
    * @param file File being uploaded.
    * @return Response entity.
@@ -107,6 +107,7 @@ public class SubmissionController {
 
     inputProcessorService.process(submissionId, fileByteArray);
 
+    // TODO: Doesn't work! Returns http://submission-svc/submission/simulation/3.
     final URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                                                     .path("/{submissionId}")
                                                     .buildAndExpand(submissionId)
