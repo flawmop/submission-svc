@@ -108,7 +108,7 @@ public class SubmissionControllerE2E {
                    .expectAll(
                      rsc -> rsc.expectStatus().isNotFound(),
                      rsc -> rsc.expectHeader().contentType(textWithCharset),
-                     rsc -> rsc.expectBody(String.class).isEqualTo("Submission with identifier '1' was not found"));
+                     rsc -> rsc.expectBody(String.class).isEqualTo("Submission with/using identifier '1' was not found"));
     }
   }
 
@@ -130,7 +130,7 @@ public class SubmissionControllerE2E {
                    .expectAll(
                      rsc -> rsc.expectStatus().isNotFound(),
                      rsc -> rsc.expectHeader().contentType(textWithCharset),
-                     rsc -> rsc.expectBody(String.class).isEqualTo("Submission with identifier '1' was not found"));
+                     rsc -> rsc.expectBody(String.class).isEqualTo("Submission with/using identifier '1' was not found"));
     }
   }
 
