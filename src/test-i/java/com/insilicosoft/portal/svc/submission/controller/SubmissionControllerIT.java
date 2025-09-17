@@ -67,7 +67,7 @@ public class SubmissionControllerIT {
              .andExpectAll(
                status().isNotFound(),
                content().contentType(textWithCharset),
-               content().string("Entity with identifier '1' was not found"));
+               content().string("Entity with/using identifier '1' was not found"));
 
       verify(mockSubmissionService).retrieve(submissionId);
     }
