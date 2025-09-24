@@ -1,0 +1,11 @@
+== Create a submission
+
+=== Request
+
+A `POST` request is used to create a submission.
+
+operation::submission-post[snippets='http-request,request-parts']
+
+=== Response
+
+operation::submission-post[snippets='http-response,response-headers']

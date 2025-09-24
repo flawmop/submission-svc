@@ -1,0 +1,11 @@
+== Find a submission by id
+
+=== Request
+
+A `GET` request is used to find a submission by id.
+
+operation::submission-get[snippets='http-request,path-parameters']
+
+=== Response
+
+operation::submission-get[snippets='response-body,response-fields']

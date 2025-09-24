@@ -103,11 +103,15 @@ public class SubmissionController {
     }
 
     final Submission submission = submissionService.create();
-    final Long submissionId = submission.getEntityId();
+    final Long submissionId = submission.getSubmissionId();
+
+    // TODO : Remove IllegalStateException
+    if (submissionId == null)
+      throw new IllegalStateException("A Submission object has been created yet its @Id has not been assigned");
 
     inputProcessorService.process(submissionId, fileByteArray);
 
-    // TODO: Doesn't work! Returns http://submission-svc/submission/simulation/3.
+    // TODO: Doesn't work! In k8s it returns http://submission-svc/submission/simulation/3.
     final URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                                                     .path("/{submissionId}")
                                                     .buildAndExpand(submissionId)

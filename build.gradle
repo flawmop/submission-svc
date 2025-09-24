@@ -7,6 +7,7 @@ plugins {
   id "com.gorylenko.gradle-git-properties" version "2.4.2"
   id 'io.spring.dependency-management' version '1.1.6'
   id 'org.springframework.boot' version '3.3.3'
+  id "org.asciidoctor.jvm.convert" version "3.3.2"
 
   // Doesn't play friendly with StreamBridge!
   //id 'org.graalvm.buildtools.native' version '0.9.28'
@@ -16,7 +17,7 @@ group = 'com.insilicosoft.portal.svc'
 version = '0.0.1-SNAPSHOT'
 
 java {
-  sourceCompatibility = '21'
+  sourceCompatibility = '17'
 }
 
 repositories {
@@ -34,9 +35,13 @@ ext {
   set('springCloudVersion', "2023.0.0")
   set('tcKeycloakVersion', "2.3.0")
   set('tcPostgresVersion', "1.17.3")
+
+  snippetsDir = file('build/generated-snippets')
 }
 
+// https://asciidoctor.github.io/asciidoctor-gradle-plugin/master/user-guide/#asciidoctorj-extensions
 configurations {
+  asciidoctorExt
   runtimeOnly {
     // Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
     exclude group: 'commons-logging', module: 'commons-logging'
@@ -44,6 +49,8 @@ configurations {
 }
 
 dependencies {
+  asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
   implementation 'io.micrometer:micrometer-registry-prometheus:1.13.3'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -114,6 +121,7 @@ testing {
         implementation "com.github.dasniko:testcontainers-keycloak:${tcKeycloakVersion}"
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'                      // JdbcTemplate, @Transactional
         implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+        implementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
         implementation 'org.springframework.security:spring-security-test'
         implementation 'org.testcontainers:junit-jupiter'
         implementation "org.testcontainers:postgresql:${tcPostgresVersion}"
@@ -148,10 +156,22 @@ tasks.register('codeCoverageReport', JacocoReport) {
   }
 }
 
+// https://asciidoctor.github.io/asciidoctor-gradle-plugin/master/user-guide/#_task_configuration
+asciidoctor {
+  configurations 'asciidoctorExt'
+  dependsOn testing.suites.test_e2e
+  inputs.dir snippetsDir
+  outputDir file('build/asciidocs')
+  sources {
+    include 'index.adoc'
+  }
+}
+
 tasks.named('check').configure {
   dependsOn(test)
   dependsOn(testing.suites.test_i)
   dependsOn(testing.suites.test_e2e)
+  dependsOn('asciidoctor')
   dependsOn('codeCoverageReport')
 }
 

@@ -1,0 +1,11 @@
+== Delete a submission
+
+=== Request
+
+A `DELETE` request is used to delete a submission.
+
+operation::submission-delete[snippets='http-request,path-parameters']
+
+=== Response
+
+operation::submission-delete[snippets='http-response']

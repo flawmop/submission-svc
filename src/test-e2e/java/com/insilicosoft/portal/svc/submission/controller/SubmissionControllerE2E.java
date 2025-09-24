@@ -4,6 +4,19 @@ import static org.springframework.web.reactive.function.BodyInserters.fromFormDa
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyHeaders;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartBody;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -14,6 +27,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.FileSystemResource;
@@ -21,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -35,6 +50,7 @@ import com.insilicosoft.portal.svc.submission.SubmissionIdentifiers;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 
+@AutoConfigureRestDocs
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Testcontainers
 public class SubmissionControllerE2E {
@@ -58,7 +74,8 @@ public class SubmissionControllerE2E {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
-
+  @Autowired
+  private RestDocumentationContextProvider restDocumentation;
   @Autowired
   private WebTestClient webTestClient;
 
@@ -194,19 +211,49 @@ public class SubmissionControllerE2E {
       multipartBodyBuilder.part(SubmissionIdentifiers.PARAM_NAME_SIMULATION_FILE,
                                 new FileSystemResource(goodPath));
 
-      webTestClient.post()
+      webTestClient.mutate()
+                   .filter(documentationConfiguration(restDocumentation).operationPreprocessors()
+                                                                        .withRequestDefaults(prettyPrint(),
+                                                                                             modifyHeaders().remove(HttpHeaders.ACCEPT_ENCODING),
+                                                                                             modifyHeaders().remove(HttpHeaders.ACCEPT),
+                                                                                             modifyHeaders().set(HttpHeaders.USER_AGENT, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.HOST, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer ..."))
+                                                                        .withResponseDefaults(modifyHeaders().remove(HttpHeaders.CACHE_CONTROL),
+                                                                                              modifyHeaders().remove(HttpHeaders.PRAGMA),
+                                                                                              modifyHeaders().remove(HttpHeaders.EXPIRES),
+                                                                                              modifyHeaders().remove(HttpHeaders.DATE),
+                                                                                              modifyHeaders().remove("X-Content-Type-Options"),
+                                                                                              modifyHeaders().remove("X-Frame-Options"),
+                                                                                              modifyHeaders().remove("X-XSS-Protection")))
+                   .build()
+                   .post()
                    .uri(postUrl)
                    .headers(headers -> {
                      headers.setBearerAuth(bjornTokens.accessToken);
                    })
+                  .contentType(MediaType.MULTIPART_FORM_DATA)
                   .body(fromMultipartData(multipartBodyBuilder.build()))
                   .exchange()
                   .expectAll(
                     rsc -> rsc.expectStatus().isCreated(),
                     rsc -> rsc.expectHeader().location("http://localhost:" + port + postUrl + "/" + submissionId),
-                    rsc -> rsc.expectBody().isEmpty());
+                    rsc -> rsc.expectBody().isEmpty())
+                  .expectBody(Void.class)
+                  .consumeWith(document("submission-post",
+                                        requestParts(partWithName(SubmissionIdentifiers.PARAM_NAME_SIMULATION_FILE).description("IC50 data file")),
+                                        responseHeaders(headerWithName(HttpHeaders.LOCATION).description("URL where you can find the new submission"))));
 
-      webTestClient.get()
+      webTestClient.mutate()
+                   .filter(documentationConfiguration(restDocumentation).operationPreprocessors()
+                                                                        .withRequestDefaults(prettyPrint(),
+                                                                                             modifyHeaders().remove(HttpHeaders.ACCEPT_ENCODING),
+                                                                                             modifyHeaders().set(HttpHeaders.USER_AGENT, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.HOST, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer ..."))
+                                                                        .withResponseDefaults(prettyPrint()))
+                   .build()
+                   .get()
                    .uri(url, submissionId)
                    .accept(MediaType.APPLICATION_JSON)
                    .headers(headers -> {
@@ -216,9 +263,28 @@ public class SubmissionControllerE2E {
                    .expectAll(
                      rsc -> rsc.expectStatus().isOk(),
                      rsc -> rsc.expectHeader().contentType(applicationJson),
-                     rsc -> rsc.expectBody().jsonPath("$.entityId").isEqualTo(submissionId));
+                     rsc -> rsc.expectBody().jsonPath("$.submissionId").isEqualTo(submissionId)
+                               .consumeWith(document("submission-get",
+                                                     pathParameters(parameterWithName("id").description("Submission ID")),
+                                                     responseFields(fieldWithPath("submissionId").description("Submission ID"),
+                                                                    fieldWithPath("state").description("Submission state. Values are `APPROVED`, `COMPLETED`, `CREATED`, `FAILED`, `REJECTED`")))));
 
-      webTestClient.delete()
+      webTestClient.mutate()
+                   .filter(documentationConfiguration(restDocumentation).operationPreprocessors()
+                                                                        .withRequestDefaults(modifyHeaders().remove(HttpHeaders.ACCEPT_ENCODING),
+                                                                                             modifyHeaders().remove(HttpHeaders.ACCEPT),
+                                                                                             modifyHeaders().set(HttpHeaders.USER_AGENT, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.HOST, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer ..."))
+                                                                        .withResponseDefaults(modifyHeaders().remove(HttpHeaders.CACHE_CONTROL),
+                                                                                              modifyHeaders().remove(HttpHeaders.PRAGMA),
+                                                                                              modifyHeaders().remove(HttpHeaders.EXPIRES),
+                                                                                              modifyHeaders().remove(HttpHeaders.DATE),
+                                                                                              modifyHeaders().remove("X-Content-Type-Options"),
+                                                                                              modifyHeaders().remove("X-Frame-Options"),
+                                                                                              modifyHeaders().remove("X-XSS-Protection")))
+                   .build()
+                   .delete()
                    .uri(url, submissionId)
                    .headers(headers -> {
                      headers.setBearerAuth(bjornTokens.accessToken);
@@ -226,7 +292,10 @@ public class SubmissionControllerE2E {
                    .exchange()
                    .expectAll(
                      rsc -> rsc.expectStatus().isNoContent(),
-                     rsc -> rsc.expectBody().isEmpty());
+                     rsc -> rsc.expectBody().isEmpty())
+                   .expectBody(Void.class)
+                   .consumeWith(document("submission-delete",
+                                         pathParameters(parameterWithName("id").description("Submission ID"))));
     }
   }
 

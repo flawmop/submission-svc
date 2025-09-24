@@ -101,7 +101,7 @@ public class SubmissionControllerTest {
 
       var submissionEntityId = 1l;
       when(mockSubmissionService.create()).thenReturn(mockSubmission);
-      when(mockSubmission.getEntityId()).thenReturn(submissionEntityId);
+      when(mockSubmission.getSubmissionId()).thenReturn(submissionEntityId);
       doNothing().when(mockInputProcessorService).process(anyLong(), any(byte[].class));
 
       final ResponseEntity<Void> response = controller.createSimulation(file);

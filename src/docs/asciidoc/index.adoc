@@ -1,0 +1,26 @@
+:asciidoc_dir: src/docs/asciidoc
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+= Submission API Documentation
+
+== DELETE
+
+include::{asciidoc_dir}/submission-delete.adoc[]
+
+'''
+
+== GET
+
+include::{asciidoc_dir}/submission-get.adoc[]
+
+'''
+
+== POST
+
+include::{asciidoc_dir}/submission-post.adoc[]
+
+'''

@@ -39,7 +39,7 @@ public class Submission {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = IDENTITY)
-  private Long entityId;
+  private Long submissionId;
 
   @Column(name = "state", nullable = false)
   @Enumerated(value = EnumType.STRING)
@@ -48,7 +48,7 @@ public class Submission {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "submission_message",
                    foreignKey = @ForeignKey(name = "simulation_fk"),
-                   joinColumns = @JoinColumn(name = "entityId"))
+                   joinColumns = @JoinColumn(name = "submissionId"))
   @Column(nullable = false)
   private Set<Message> messages = new HashSet<>();
 
@@ -97,12 +97,12 @@ public class Submission {
   // Getters/Setters
 
   /**
-   * Retrieve the entity identifier.
+   * Retrieve the submission identifier.
    * 
-   * @return Entity identifier (or {@code null} if not yet persisted).
+   * @return Submission identifier (or {@code null} if not yet persisted).
    */
-  public Long getEntityId() {
-    return entityId;
+  public Long getSubmissionId() {
+    return submissionId;
   }
 
   /**
@@ -118,7 +118,7 @@ public class Submission {
 
   @Override
   public String toString() {
-    return "Submission [entityId=" + entityId + ", state=" + state + ", messages=" + messages + ", createdDate="
+    return "Submission [submissionId=" + submissionId + ", state=" + state + ", messages=" + messages + ", createdDate="
         + createdDate + ", createdBy=" + createdBy + ", lockVersion=" + lockVersion + "]";
   }
 
