@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.insilicosoft.portal.svc.submission.event.SimulationMessage;
+import com.insilicosoft.portal.svc.submission.event.SimulationCreate;
 import com.insilicosoft.portal.svc.submission.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.submission.exception.InputVerificationException;
 import com.insilicosoft.portal.svc.submission.persistence.entity.Message;
@@ -135,16 +135,16 @@ public class InputProcessorServiceImpl implements InputProcessorService {
       throw new InputVerificationException("Problems encountered translating the simulation input");
     }
 
-    final List<SimulationMessage> simulationMessages = new ArrayList<>();
+    final List<SimulationCreate> simulationCreateEvents = new ArrayList<>();
     for (Simulation simulation: simulations) {
       final Simulation saved = simulationRepository.save(simulation);
-      simulationMessages.add(saved.toMessage());
+      simulationCreateEvents.add(saved.toCreate());
     }
 
     // Fire off events for, e.g. simulation runners and databases
-    for (SimulationMessage simulationMessage: simulationMessages) {
+    for (SimulationCreate simulationCreate: simulationCreateEvents) {
       try {
-        streamBridge.send(BINDING_NAME_SIMULATION_INPUT, simulationMessage);
+        streamBridge.send(BINDING_NAME_SIMULATION_INPUT, simulationCreate);
       } catch (Exception e) {
         // e.g. java.net.ConnectException
         final String message = e.getMessage();

@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.stream.function.StreamBridge;
 
-import com.insilicosoft.portal.svc.submission.event.SimulationMessage;
+import com.insilicosoft.portal.svc.submission.event.SimulationCreate;
 import com.insilicosoft.portal.svc.submission.exception.FileProcessingException;
 import com.insilicosoft.portal.svc.submission.exception.InputVerificationException;
 import com.insilicosoft.portal.svc.submission.persistence.entity.Simulation;
@@ -36,12 +36,12 @@ public class InputProcessorServiceTest {
   @Captor
   private ArgumentCaptor<String> captorString;
   @Captor
-  private ArgumentCaptor<SimulationMessage> captorSimulationMessage;
+  private ArgumentCaptor<SimulationCreate> captorSimulationMessage;
 
   @Mock
   private Simulation mockSimulation;
   @Mock
-  private SimulationMessage mockSimulationMessage;
+  private SimulationCreate mockSimulationCreate;
   @Mock
   private SimulationRepository mockSimulationRepository;
   @Mock
@@ -137,15 +137,15 @@ public class InputProcessorServiceTest {
     final byte[] file = fileContent.getBytes();
 
     when(mockSimulationRepository.save(any(Simulation.class))).thenReturn(mockSimulation);
-    when(mockSimulation.toMessage()).thenReturn(mockSimulationMessage);
-    when(mockStreamBridge.send(any(String.class), any(SimulationMessage.class))).thenReturn(true);
+    when(mockSimulation.toCreate()).thenReturn(mockSimulationCreate);
+    when(mockStreamBridge.send(any(String.class), any(SimulationCreate.class))).thenReturn(true);
 
     inputProcessorService.process(submissionEntityId, file);
 
-    verify(mockSimulation, only()).toMessage();  // We're not calling getMessages() on the mock!
+    verify(mockSimulation, only()).toCreate();  // We're not calling getMessages() on the mock!
     verify(mockStreamBridge, only()).send(captorString.capture(), captorSimulationMessage.capture());
     assertThat(captorString.getValue()).isEqualTo(BINDING_NAME_SIMULATION_INPUT);
-    assertThat(captorSimulationMessage.getValue()).isEqualTo(mockSimulationMessage);
+    assertThat(captorSimulationMessage.getValue()).isEqualTo(mockSimulationCreate);
   }
 
 }

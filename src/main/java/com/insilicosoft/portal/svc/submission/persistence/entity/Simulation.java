@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.insilicosoft.portal.svc.submission.event.SimulationMessage;
+import com.insilicosoft.portal.svc.submission.event.SimulationCreate;
 import com.insilicosoft.portal.svc.submission.value.MessageLevel;
 
 import jakarta.persistence.CollectionTable;
@@ -116,12 +116,12 @@ public class Simulation {
   // 
 
   /**
-   * Retrieve a {@link SimulationMessage} for this {@code Simulation}.
+   * Retrieve a {@link SimulationCreate} event record for this {@code Simulation}.
    *  
-   * @return Equivalent {@code SimulationMessage}.
+   * @return Equivalent {@code SimulationCreate}.
    */
-  public SimulationMessage toMessage() {
-    return new SimulationMessage(entityId, modelId, pacingFrequency, pacingMaxTime, plasmaPoints);
+  public SimulationCreate toCreate() {
+    return new SimulationCreate(entityId, modelId, pacingFrequency, pacingMaxTime, plasmaPoints);
   }
 
   public Set<Message> getMessages(final MessageLevel minLevel) {
