@@ -45,8 +45,8 @@ spring:
     stream:
       bindings:
         # Name below referenced internally and by StreamBridge
-        simulation-input:
-          destination: simulation-invoke
+        binding-simulation-create:
+          destination: simulation-create
   datasource:
     hikari:
       connection-timeout: 2000 #ms

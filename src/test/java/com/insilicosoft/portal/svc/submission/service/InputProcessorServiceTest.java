@@ -1,6 +1,6 @@
 package com.insilicosoft.portal.svc.submission.service;
 
-import static com.insilicosoft.portal.svc.submission.SubmissionIdentifiers.BINDING_NAME_SIMULATION_INPUT;
+import static com.insilicosoft.portal.svc.submission.SubmissionIdentifiers.BINDING_NAME_SIMULATION_CREATE;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -144,7 +144,7 @@ public class InputProcessorServiceTest {
 
     verify(mockSimulation, only()).toCreate();  // We're not calling getMessages() on the mock!
     verify(mockStreamBridge, only()).send(captorString.capture(), captorSimulationMessage.capture());
-    assertThat(captorString.getValue()).isEqualTo(BINDING_NAME_SIMULATION_INPUT);
+    assertThat(captorString.getValue()).isEqualTo(BINDING_NAME_SIMULATION_CREATE);
     assertThat(captorSimulationMessage.getValue()).isEqualTo(mockSimulationCreate);
   }
 

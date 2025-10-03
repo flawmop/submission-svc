@@ -1,6 +1,6 @@
 package com.insilicosoft.portal.svc.submission.service;
 
-import static com.insilicosoft.portal.svc.submission.SubmissionIdentifiers.BINDING_NAME_SIMULATION_INPUT;
+import static com.insilicosoft.portal.svc.submission.SubmissionIdentifiers.BINDING_NAME_SIMULATION_CREATE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
@@ -141,10 +141,10 @@ public class InputProcessorServiceImpl implements InputProcessorService {
       simulationCreateEvents.add(saved.toCreate());
     }
 
-    // Fire off events for, e.g. simulation runners and databases
+    // Fire off events for, e.g. simulation runners and results
     for (SimulationCreate simulationCreate: simulationCreateEvents) {
       try {
-        streamBridge.send(BINDING_NAME_SIMULATION_INPUT, simulationCreate);
+        streamBridge.send(BINDING_NAME_SIMULATION_CREATE, simulationCreate);
       } catch (Exception e) {
         // e.g. java.net.ConnectException
         final String message = e.getMessage();
