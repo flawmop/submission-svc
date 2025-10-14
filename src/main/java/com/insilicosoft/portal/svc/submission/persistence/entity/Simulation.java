@@ -44,7 +44,7 @@ public class Simulation {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = IDENTITY)
-  private Long entityId;
+  private Long simulationId;
 
   @Column(nullable = false, updatable = false)
   private long submissionId;
@@ -65,7 +65,7 @@ public class Simulation {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "simulation_plasmapoints",
                    foreignKey = @ForeignKey(name = "simulation_fk"),
-                   joinColumns = @JoinColumn(name = "entityId"))
+                   joinColumns = @JoinColumn(name = "simulationId"))
   @Column(nullable = false)
   // TODO : Find a way to prevent updating this collection
   private List<BigDecimal> plasmaPoints = new ArrayList<>();
@@ -73,7 +73,7 @@ public class Simulation {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "simulation_message",
                    foreignKey = @ForeignKey(name = "simulation_fk"),
-                   joinColumns = @JoinColumn(name = "entityId"))
+                   joinColumns = @JoinColumn(name = "simulationId"))
   @Column(nullable = false)
   // TODO : Find a way to prevent updating this collection
   private Set<Message> messages = new HashSet<>();
@@ -121,7 +121,7 @@ public class Simulation {
    * @return Equivalent {@code SimulationCreate}.
    */
   public SimulationCreate toCreate() {
-    return new SimulationCreate(entityId, modelId, pacingFrequency, pacingMaxTime, plasmaPoints);
+    return new SimulationCreate(simulationId, modelId, pacingFrequency, pacingMaxTime, plasmaPoints);
   }
 
   public Set<Message> getMessages(final MessageLevel minLevel) {
@@ -184,19 +184,19 @@ public class Simulation {
   }
 
   /**
-   * Retrieve the entity identifier.
+   * Retrieve the simulation identifier.
    * 
-   * @return Entity identifier (or empty {@code Optional} if not yet persisted).
+   * @return Simulation identifier (or empty {@code Optional} if not yet persisted).
    */
-  public Optional<Long> getEntityId() {
-    return Optional.ofNullable(entityId);
+  public Optional<Long> getSimulationId() {
+    return Optional.ofNullable(simulationId);
   }
 
   // Boilerplate implementations
 
   @Override
   public String toString() {
-    return "Simulation [entityId=" + entityId + ", submissionId=" + submissionId + ", modelId=" + modelId
+    return "Simulation [simulationId=" + simulationId + ", submissionId=" + submissionId + ", modelId=" + modelId
         + ", pacingFrequency=" + pacingFrequency + ", pacingMaxTime=" + pacingMaxTime + ", plasmaPoints=" + plasmaPoints
         + ", messages=" + messages + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedBy=" + lastModifiedBy
         + ", lockVersion=" + lockVersion + "]";
