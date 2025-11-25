@@ -54,4 +54,13 @@ public interface SubmissionService {
    */
   Submission retrieve(long submissionId) throws EntityNotAccessibleException;
 
+  /**
+   * Retrieve the Simulation identifiers for the identified {@literal submissionId}.
+   * 
+   * @param submissionId Submission identifier.
+   * @return Simulation identifiers.
+   * @throws EntityNotAccessibleException If identified Submission not accessible.
+   */
+  String[] retrieveSimulationIds(long submissionId) throws EntityNotAccessibleException;
+
 }

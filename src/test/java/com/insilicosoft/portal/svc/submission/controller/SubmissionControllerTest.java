@@ -72,7 +72,7 @@ public class SubmissionControllerTest {
 
       when(mockSubmissionService.retrieve(submissionId)).thenReturn(null);
 
-      var submission = controller.get(submissionId);
+      var submission = controller.getSubmission(submissionId);
 
       assertThat(submission).isNull();
     }

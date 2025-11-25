@@ -1,7 +1,11 @@
 package com.insilicosoft.portal.svc.submission.service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.insilicosoft.portal.svc.submission.exception.EntityNotAccessibleException;
 import com.insilicosoft.portal.svc.submission.persistence.entity.Message;
+import com.insilicosoft.portal.svc.submission.persistence.entity.Simulation;
 import com.insilicosoft.portal.svc.submission.persistence.entity.Submission;
 import com.insilicosoft.portal.svc.submission.persistence.repository.SimulationRepository;
 import com.insilicosoft.portal.svc.submission.persistence.repository.SubmissionRepository;
@@ -76,6 +81,29 @@ public class SubmissionServiceImpl implements SubmissionService {
     return submissionRepository.findById(submissionId)
                                .orElseThrow(() -> new EntityNotAccessibleException(repoEntity,
                                                                                    String.valueOf(submissionId)));
+  }
+
+  @Override
+  @Transactional
+  public String[] retrieveSimulationIds(long submissionId) throws EntityNotAccessibleException {
+    log.debug("~retrieveSimulationIds() : Invoked for id '{}'", submissionId);
+
+    String problem = "";
+    try (Stream<Simulation> simulationsStream = simulationRepository.findAllBySubmissionId(submissionId)) {
+      final List<Simulation> simulations = simulationsStream.collect(Collectors.toList());
+      if (simulations.isEmpty())
+        throw new EntityNotAccessibleException(repoEntity, String.valueOf(submissionId));
+
+      return simulations.stream().map(Simulation::getSimulationId)
+                                 .flatMap(Optional::stream)
+                                 .map(String::valueOf)
+                                 .toArray(String[]::new);
+    } catch (Exception e) {
+      problem = e.getMessage();
+    }
+    log.error("~retrieveSimulationIds() : Error '{}'", problem);
+
+    return new String[] { problem };
   }
 
 }

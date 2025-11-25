@@ -61,11 +61,30 @@ public class SubmissionController {
    * @return Found submission.
    * @throws EntityNotAccessibleException If not found or not retrievable due to security.
    */
-  @GetMapping(value = "/{id}")
-  @Timed(value = "submission.get", description = "GET request")
-  public Submission get(final @PathVariable(name = "id") long submissionId)
-                        throws EntityNotAccessibleException {
+  @GetMapping(value = "/{submissionId}")
+  @Timed(value = "submission.getSubmission", description = "GET Submission request")
+  public Submission getSubmission(final @PathVariable(name = "submissionId")
+                                        long submissionId)
+                                  throws EntityNotAccessibleException {
     return submissionService.retrieve(submissionId);
+  }
+
+  /**
+   * Retrieve all Simulation identifiers for a Submission.
+   * 
+   * @param submissionId Submission identifier.
+   * @return Array of Simulation identifiers.
+   * @throws EntityNotAccessibleException If not found or not retrievable due to security.
+   */
+  @GetMapping(value = "/{submissionId}/simulationIds")
+  @Timed(value = "submission.getSubmissionSimulationIds",
+         description = "GET Submission SimulationIds request")
+  public String[] getSubmissionSimulationIds(final @PathVariable(name = "submissionId")
+                                                   long submissionId)
+                                             throws EntityNotAccessibleException {
+    log.debug("~getSubmissionSimulationIds() : Invoked for '{}'", submissionId);
+
+    return submissionService.retrieveSimulationIds(submissionId);
   }
 
   /**

@@ -7,7 +7,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyHeaders;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
@@ -243,6 +242,30 @@ public class SubmissionControllerE2E {
                   .consumeWith(document("submission-post",
                                         requestParts(partWithName(SubmissionIdentifiers.PARAM_NAME_SIMULATION_FILE).description("IC50 data file")),
                                         responseHeaders(headerWithName(HttpHeaders.LOCATION).description("URL where you can find the new submission"))));
+
+      webTestClient.mutate()
+                   .filter(documentationConfiguration(restDocumentation).operationPreprocessors()
+                                                                        .withRequestDefaults(prettyPrint(),
+                                                                                             modifyHeaders().remove(HttpHeaders.ACCEPT_ENCODING),
+                                                                                             modifyHeaders().set(HttpHeaders.USER_AGENT, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.HOST, "..."),
+                                                                                             modifyHeaders().set(HttpHeaders.AUTHORIZATION, "Bearer ..."))
+                                                                        .withResponseDefaults(prettyPrint()))
+                   .build()
+                   .get()
+                   .uri(url.concat("/simulationIds"), submissionId)
+                   .accept(MediaType.APPLICATION_JSON)
+                   .headers(headers -> {
+                     headers.setBearerAuth(bjornTokens.accessToken);
+                   })
+                   .exchange()
+                   .expectAll(
+                     rsc -> rsc.expectStatus().isOk(),
+                     rsc -> rsc.expectHeader().contentType(applicationJson),
+                     rsc -> rsc.expectBody()
+                               .consumeWith(document("submission-get-simulation-ids",
+                                                     pathParameters(parameterWithName("id").description("Submission ID")),
+                                                     responseFields(fieldWithPath("[]").description("An array of simulation identifiers for the submission")))));
 
       webTestClient.mutate()
                    .filter(documentationConfiguration(restDocumentation).operationPreprocessors()

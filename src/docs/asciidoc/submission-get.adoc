@@ -9,3 +9,15 @@ operation::submission-get[snippets='http-request,path-parameters']
 === Response
 
 operation::submission-get[snippets='response-body,response-fields']
+
+== Find a submission's simulation ids (by submission id)
+
+=== Request
+
+A `GET` request is used to find the simulation ids associated with a submission.
+
+operation::submission-get-simulation-ids[snippets='http-request,path-parameters']
+
+=== Response
+
+operation::submission-get-simulation-ids[snippets='response-body,response-fields']

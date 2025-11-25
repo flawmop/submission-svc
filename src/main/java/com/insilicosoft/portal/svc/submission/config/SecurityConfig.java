@@ -2,6 +2,7 @@ package com.insilicosoft.portal.svc.submission.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
@@ -53,6 +54,9 @@ public class SecurityConfig {
     http.authorizeHttpRequests((authz) -> authz.requestMatchers(EndpointRequest.to(InfoEndpoint.class),
                                                                 EndpointRequest.to(MetricsEndpoint.class),
                                                                 EndpointRequest.to(PrometheusScrapeEndpoint.class)).authenticated()
+                                                // From results-svc - retrieve sim ids for submission
+                                               .requestMatchers(regexMatcher(SubmissionIdentifiers.REQUEST_MAPPING_SUBMISSION.concat("/\\d+/simulationIds")))
+                                                               .permitAll()
                                                .requestMatchers(SubmissionIdentifiers.REQUEST_MAPPING_SUBMISSION.concat("/**"))
                                                                .hasRole(SubmissionIdentifiers.ROLE_USER))
         .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults()))
